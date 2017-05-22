@@ -1,0 +1,615 @@
+---
+title: "Entity Resolution"
+author: "David Cortes"
+date: "July 23, 2015"
+output: html_document
+---
+
+#Description
+
+This example is about Entity Resolution - also called record linkage - on the benchmark dataset of Google and Amazon products which can be found [here](http://dbs.uni-leipzig.de/en/research/projects/object_matching/fever/benchmark_datasets_for_entity_resolution). There are two datasets: one contains product information for several products from Amazon (1362 records) and the other contains information for products taken from Google, which were in turn indexed from different sites (3226 records). The goal is to determine which entries refer to the same product, and there is another document indicating which products are actually the same (1300 matches), so the dataset can be easily used to benchmark different methods. This example was inspired by professor Talwalkar's computing lab on the course CS100.1x at edX.
+
+Entity Resolution has many applications, the most common being augmenting a database with data taken from a different source (e.g. adding public information to a proprietary dataset). It has also been used in other interesting cases, such as determining which clients came from a specific seller when they both record slightly different information about clients (for example, a client might give his phone number to the seller who first brought it into buying or suscribing to a product, and then give his mobile phone when buying/suscribing it).
+
+### 1. Taking a look at the dataset
+
+```{r,results="asis"}
+amazon <- read.csv("Amazon.csv",stringsAsFactors=FALSE)
+google <- read.csv("GoogleProducts.csv",stringsAsFactors=FALSE)
+matching <- read.csv("Amzon_GoogleProducts_perfectMapping.csv",stringsAsFactors=FALSE)
+names(amazon)[2:5]=names(google)[2:5]
+library(xtable)
+disp1=xtable(amazon[1:4,2:5])
+disp2=xtable(google[1:4,2:5])
+disp3=xtable(rbind(amazon[amazon[,1]==matching[1,1],2:5],google[google[,1]==matching[1,2],2:5]))
+print("Sample Rows from Amazon");print(disp1,floating=FALSE,type="html",include.rownames = FALSE);print("Sample Rows from Google");print(disp2,floating=FALSE,type="html",include.rownames = FALSE);print("Sample matching entry");print(disp3,floating=FALSE,type="html",include.rownames = FALSE)
+```
+
+****
+
+It can be seen, for example, that for this sample matching record, in one case the number is written with a thousands separator but in the other not, and in one case there is a lot more information than in the other.
+
+## 2. The plan
+
+There are different algorithms that have been proposed to deal with problems of entity resolution, and some do better when there are fields with very specific information such as (First Name, Last Name, Phone Number, Address), which is not the case here.
+
+The algorithm illustrated here consists of doing some word processing on the text fields, converting the text fields to bags of words weighted by their TF-IDF, assigning different weights to each field and computing their similarity (using cosine similarity for text fields - an edit-distance based metric for manufacturer - and a simple formula for the price), to come up with a weighted similarity measure. Then, a sample of matching records will be taken from the matching dataset (using the entire set would be the equivalent of cheating, as what the algorithm tries to do is precisely come up with that dataset when it isn't available; however, a small sample of matching products could be easily identified by a person to feed into the algorithm, and this process would be 'simulated' by picking a random sample from this matching list) and it will be evaluated what is the average similarity among those matching entries and among the other entries to come up with a cut-off threshold to label two records as being the same or not.
+
+Different possibilities will be tried and the resulting matching lists will be evaluated by their accuracy over all pairs, precision, recall and F1 score.
+
+
+## 3. Processing the data
+
+```{r,message=FALSE,warning=FALSE,cache=TRUE}
+library(tm)
+library(Matrix)
+
+#Trying first with separate fields
+a.names=amazon$name
+g.names=google$name
+a.desc=amazon$description
+g.desc=google$description
+a.man=amazon$manufacturer
+g.man=google$manufacturer
+a.pr=amazon$price
+g.pr=as.numeric(google$price)
+a.pr[a.pr==0]=NA
+
+#Trying also with concatenated columns
+a.text=do.call(paste,c(amazon[,2:4]))
+g.text=do.call(paste,c(google[,2:4]))
+
+#Building the bags of words
+to.spm=function(dtm){
+  return(sparseMatrix(i=dtm$i, j=dtm$j, x=dtm$v,dims=c(dtm$nrow, dtm$ncol)))
+}
+
+bgwds=function(a,g){
+  bg=Corpus(VectorSource(c(a,g)))
+  bg=tm_map(bg,content_transformer(tolower))
+  bg=tm_map(bg,removeWords,stopwords())
+  bg=tm_map(bg,stripWhitespace)
+  bg=tm_map(bg,removePunctuation)
+  #Stemming would not be appropriate in this case
+  
+  bg=DocumentTermMatrix(bg, control = list(weighting = function(x) weightTfIdf(x, normalize = FALSE)))
+  bg=to.spm(bg)
+  return(bg)
+}
+a.end=length(a.names)
+g.start=a.end+1
+g.end=a.end+length(g.names)
+
+nms=bgwds(a.names,g.names)
+a.names=nms[1:a.end,]
+g.names=nms[g.start:g.end,]
+
+desc=bgwds(a.desc,g.desc)
+a.desc=desc[1:a.end,]
+g.desc=desc[g.start:g.end,]
+
+tx=bgwds(a.text,g.text)
+a.text=tx[1:a.end,]
+g.text=tx[g.start:g.end,]
+
+man2=bgwds(a.man,g.man)
+a.man2=man2[1:a.end,]
+g.man2=man2[g.start:g.end,]
+```
+
+
+## 4. Establishing similarity scores for the price
+
+Prices can be easily converted into numeric fields to avoid mismatches such as having or not having thousands separators like the matching record shown at the beginning. However, prices might vary between identical products, but it could be assumed that they won't vary much. Thus, the similarity could be established by calculating (1-percentage difference), capping it at 0 when the difference is too large. The formula used to calculate continuous growth has the nice property that the percentage difference between the larger and smaller quantity is the same as the difference between the smaller and the larger but with different signs, unlike the typical formula used to calculate percentual differences. Thus, the absolute value of it could be used. If we assume that matching records can have a maximum price difference of 25%, then a similarity metric could be set by:
+
+$$sim(record1, record2) = max(0, 1 - 2 \times ln(\frac{record1}{record2}))$$
+
+```{r,cache=TRUE}
+price.sim=function(price1,price2){
+  if (is.na(price1)|is.na(price2)){
+    return(0)
+  } else{
+    dif=abs(log(price1,price2))
+    return(max(0,1-2*dif))
+  }
+}
+
+
+pr.sim=matrix(nrow=length(a.pr),ncol=length(g.pr))
+for (record1 in 1:length(a.pr)) {
+  for (record2 in 1:length(g.pr)){
+    pr.sim[record1,record2]=price.sim(a.pr[record1],g.pr[record2])
+  }
+}
+print(paste0("Average price similarity: ",mean(pr.sim)))
+```
+
+
+## 5. Establishing similarity scores for the manufacturers
+
+Unlike the other text fields, "manufacturer" is a field that contains only a short piece of text, and the edit distance might be a more appropriate metric to compare differences in this field. If we assume that edit distances of around 5 could be reasonable, while not discarding those that have distances of up to 15 (e.g. hp vs. hewlett packard), the similarity could be established by the following formula:
+
+$$sim(record1,record2) = \begin{cases} e^{(-\frac{editDist(record1,record2)}{5})} & \text {if }editDist(record1,record2) \leq 15\\ 0 & \quad \quad \quad \quad \quad \quad \quad \quad \text otherwise\\ \end{cases}$$
+
+Although I'll also try a TF-IDF'd bag-of-words cosine similarity as with the other fields (will be computed on the next point).
+
+
+```{r,cache=TRUE}
+man.sim=matrix(nrow=length(a.pr),ncol=length(g.pr))
+for (record1 in 1:length(a.man)) {
+  for (record2 in 1:length(g.man)){
+    if (is.na(a.man[record1]) | is.na(g.man[record2])){
+     man.sim[record1,record2]=0
+    } else {
+      edit=man.sim[record1,record2]=adist(a.man[record1],g.man[record2])
+      if (edit>15){
+        man.sim[record1,record2]=0
+      } else {
+        man.sim[record1,record2]=exp(-edit/5)
+      }
+    }
+  }
+}
+```
+
+
+## 6. Computing cosine similarities
+
+This piece of code would compute the required cosine similarities. However, R is not the most efficient program for these kinds of intensive computations, and it would take more than one day to execute in a desktop computer. Thus, I switched to Spark and generated the desired output, which I then imported into R. Spark did the job in around 20 minutes in a single multicore machine.
+
+*Warning: this is a very slow computation and doesn't scale well when using R.*
+
+```{r,message=FALSE,warning=FALSE,eval=FALSE}
+library(lsa)
+library(Matrix)
+
+#First with the separate fields
+name.sim=matrix(nrow=dim(amazon)[1],ncol=dim(google)[1])
+desc.sim=matrix(nrow=dim(amazon)[1],ncol=dim(google)[1])
+man2.sim=matrix(nrow=dim(amazon)[1],ncol=dim(google)[1])
+
+#Then with the concatenated fields
+txt.sim=matrix(nrow=dim(amazon)[1],ncol=dim(google)[1])
+
+for (record1 in 1:a.end) {
+  for (record2 in 1:dim(google)[1]) {
+    name.sim[record1,record2]=cosine(a.names[record1,],g.names[record2,])
+    desc.sim[record1,record2]=cosine(a.desc[record1,],g.desc[record2,])
+    man2.sim[record1,record2]=cosine(a.man2[record1,],g.man2[record2,])
+    tx.sim[record1,record2]=cosine(a.text[record1,],g.text[record2,])
+  }
+}
+```
+
+From here on, I'll continue with the numbers that I got from Spark, which would be the equivalent of executing the code above.
+
+```{r,eval=FALSE}
+#Writing the files
+writeMM(a.names,'a.names')
+writeMM(g.names,'g.names')
+writeMM(a.desc,'a.desc')
+writeMM(g.desc,'g.desc')
+writeMM(a.man2,'a.man2')
+writeMM(g.man2,'g.man2')
+writeMM(a.text,'a.text')
+writeMM(g.text,'g.text')
+#The first two lines of each were then deleted
+```
+
+...Then Spark did its magic...
+(you can check the code [here](https://github.com/david-cortes/portfolio/blob/master/entity_resolution/heavy_computations.ipynb))
+
+```{r,cache=TRUE}
+#Reading back the output from Spark
+#The files were renamed from 'part-0000' to more indicative names
+
+names.sim.list=read.csv("names.sim", header=FALSE, quote="", comment="")
+desc.sim.list=read.csv("desc.sim", header=FALSE, quote="", comment="")
+man2.sim.list=read.csv("man2.sim", header=FALSE, quote="", comment="")
+text.sim.list=read.csv("text.sim", header=FALSE, quote="", comment="")
+
+#The output in this case is in the form of a list of Amazon-Google-Similarity triples, so I'll now turn each into a matrix
+name.sim=matrix(nrow=dim(amazon)[1],ncol=dim(google)[1])
+desc.sim=matrix(nrow=dim(amazon)[1],ncol=dim(google)[1])
+man2.sim=matrix(nrow=dim(amazon)[1],ncol=dim(google)[1])
+txt.sim=matrix(nrow=dim(amazon)[1],ncol=dim(google)[1])
+
+#Warning: these loops are very slow and if the data were larger, it would be easier to export these whole matrices from Spark
+for (i in 1:dim(names.sim.list)[1]){
+  name.sim[names.sim.list[i,1], names.sim.list[i,2]]=names.sim.list[i,3]
+}
+name.sim[is.na(name.sim)]=0
+
+for (i in 1:dim(desc.sim.list)[1]){
+  desc.sim[desc.sim.list[i,1], desc.sim.list[i,2]]=desc.sim.list[i,3]
+}
+desc.sim[is.na(desc.sim)]=0
+
+for (i in 1:dim(man2.sim)[1]){
+  man2.sim[man2.sim[i,1], man2.sim[i,2]]=man2.sim[i,3]
+}
+man2.sim[is.na(man2.sim)]=0
+
+for (i in 1:dim(names.sim.list)[1]){
+  txt.sim[text.sim.list[i,1], g=text.sim.list[i,2]]=text.sim.list[i,3]
+}
+txt.sim[is.na(txt.sim)]=0
+
+```
+
+## 7. Picking a sample of matching pairs
+
+Now I'll pick a random sample of 100 records that are known to be the same - this would normally be done by manually picking records until 100 identical ones are identified, but since there is already a list of perfect matches, I'll skip that part and just use part of that list (see explanation in section 2) to save time, and keep a list of the ones that were not maches too. This would have required a manual examination of about 333,333 records if there were no such list, so it might have been a good idea to just blindly set an arbitrary similarity threshold before starting to pick pairs (this is no problem for a computer simulation though).
+
+Then, I'll see what is the average similarity of each field in that small subsample, compared to the average similarity of non-matching records. 
+
+```{r,message=FALSE,warning=FALSE,cache=TRUE}
+library(dplyr)
+
+lookup.amazon=data.frame(amazon[,1],1:dim(amazon)[1])
+names(lookup.amazon)=c('idAmazon','numA')
+lookup.google=data.frame(google[,1],1:dim(google)[1])
+names(lookup.google)=c('idGoogleBase','numG')
+matching=matching %>% left_join(lookup.amazon) %>% left_join(lookup.google)
+
+all.pairs=expand.grid(1:dim(amazon)[1],1:dim(google)[1])
+names(all.pairs)=names(matching)[3:4]
+matches=matching[3:4]
+matches$label=1
+all.pairs=all.pairs %>% full_join(matches,by=c('numA'='numA','numG'='numG'))
+all.pairs$label[is.na(all.pairs$label)]=0
+all.pairs$name=unlist(as.data.frame(name.sim))
+all.pairs$price=unlist(as.data.frame(pr.sim))
+all.pairs$man=unlist(as.data.frame(man.sim))
+all.pairs$man2=unlist(as.data.frame(man2.sim))
+all.pairs$desc=unlist(as.data.frame(desc.sim))
+all.pairs$text=unlist(as.data.frame(txt.sim))
+all.pairs$label=as.factor(all.pairs$label)
+all.pairs$sum=all.pairs$name+all.pairs$desc+all.pairs$text
+
+set.seed(100)
+ssample=all.pairs[sample(1:dim(all.pairs)[1],333334),]
+sample.matches=ssample[ssample$label==1,]
+sample.non.matches=ssample[ssample$label==0,]
+all.pairs=all.pairs %>% anti_join(sample.matches,by=c('numA'='numA','numG'='numG'))
+all.pairs=all.pairs %>% anti_join(sample.non.matches,by=c('numA'='numA','numG'='numG'))
+all.pairs$numA=NULL
+all.pairs$numG=NULL
+sample.matches$label=NULL
+sample.non.matches$label=NULL
+
+dim(sample.matches);dim(sample.non.matches)
+summary(sample.matches[,3:8]);summary(sample.non.matches[,3:8])
+```
+
+As can be seen from this short summary, from this sample of 100 matching records, no single record had a matching or even close price, neither did they have matching tokenized manufacturers. It seems that the name field provided the highest similarity metric among matching records, followed by the concatenation of all the text fields (the IDFs are not the same when calculating it over the whole concatenation vs. field-by-field).
+
+Usually, in these kinds of problems, for every record in one dataset there is at most 1 matching record in the other dataset. Unfortunately, that is not the case here. Otherwise, it would be helpful to take advantage of that fact.
+
+```{r,cache=TRUE}
+print(length(unique(matching[,1])));print(length(unique(matching[,2])))
+
+```
+
+
+It's also as good idea to take a look at the distributions of the different metrics within this sample:
+
+```{r,message=FALSE,warning=FALSE,cache=TRUE}
+#Similarities of exactly 0 are very important to check
+print(apply(sample.matches[,c(3,5,7,8)],2,function(x) sum(x==0)))
+#And then for the non-matches too (scaling the results to make them comparable):
+print(apply(sample.non.matches[,c(3,5,7,8)],2,function(x) sum(x==0)/3332.34))
+
+
+#First look
+par(mfrow=c(2,2),oma = c(0, 0, 3, 0))
+hist(sample.matches$name,col='navy',xlab='',main='Name',breaks=seq(0,1,.1))
+hist(sample.matches$desc,col='darkred',xlab='',main='Description',breaks=seq(0,1,.1))
+hist(sample.matches$man,col='darkgreen',xlab='',main='Manufacturer',breaks=seq(0,1,.1))
+hist(sample.matches$text,col='darkorange',xlab='',main='Concatenated Text',breaks=seq(0,1,.1))
+mtext("Similarity Among Matching Pairs per Field",outer=TRUE,font=2,cex=1.3)
+
+#print(dim(sample.non.matches))
+sample.non.matches2=sample.non.matches[sample(1:dim(sample.non.matches)[1],100),]
+#sample.non.matches=sample(x=sample.non.matches2,size=100)
+par(mfrow=c(2,2),oma = c(0, 0, 3, 0))
+hist(sample.non.matches2$name,col='navy',xlab='',main='Name',breaks=seq(0,1,.1))
+hist(sample.non.matches2$desc,col='darkred',xlab='',main='Description',breaks=seq(0,1,.1))
+hist(sample.non.matches2$man,col='darkgreen',xlab='',main='Manufacturer',breaks=seq(0,1,.1))
+hist(sample.non.matches2$text,col='darkorange',xlab='',main='Concatenated Text',breaks=seq(0,1,.1))
+mtext("Similarity Among Non-Matching Pairs per Field",outer=TRUE,font=2,cex=1.3)
+
+library(dplyr)
+pl1=sample.matches[,c(3,5,7,8)] %>% arrange(desc(name+man+desc+text))
+pl2=sample.matches[,c(3,5,7,8)] %>% arrange(desc(name))
+pl3=sample.matches[,c(3,5,7,8)] %>% arrange(desc(text))
+pl4=sample.matches[,c(3,5,7,8)] %>% arrange(desc(desc))
+
+library(ggthemes)
+colrs=tableau_color_pal("tableau20")(4)
+tx=c('Name','Manufacturer','Description','Text')
+
+par(mfrow=c(2,2),oma=c(0,0,5,0),mar=c(4,2,2,0))
+barplot(t(pl1),col=colrs,xlab=('Ordered by Sum of 4 sims.'),font.lab=2,cex.lab=1.2)
+barplot(t(pl2),col=colrs,xlab=('Ordered by Name sim.'),font.lab=2,cex.lab=1.2)
+barplot(t(pl3),col=colrs,xlab=('Ordered by Conc. Text sim.'),font.lab=2,cex.lab=1.2)
+barplot(t(pl4),col=colrs,xlab=('Ordered by Description sims.'),font.lab=2,cex.lab=1.2)
+mtext("Similarities Among Matching Pairs per Field",outer=TRUE,font=2,cex=1.3,side=3,adj=.5)
+par(new=TRUE)
+par(mfrow=c(1,1),oma=c(15.5,0,0,0))
+legend('bottom',legend=tx,col=colrs,lty=1,horiz=TRUE,bty='n',lwd=6)
+
+
+pl1=sample.non.matches2[,c(3,5,7,8)] %>% arrange(desc(name+man+desc+text))
+pl2=sample.non.matches2[,c(3,5,7,8)] %>% arrange(desc(name))
+pl3=sample.non.matches2[,c(3,5,7,8)] %>% arrange(desc(text))
+pl4=sample.non.matches2[,c(3,5,7,8)] %>% arrange(desc(desc))
+
+plot.new()
+par(mfrow=c(2,2),oma=c(0,0,5,0),mar=c(4,2,2,0))
+barplot(t(pl1),col=colrs,xlab=('Ordered by Sum of 4 sims.'),font.lab=2,cex.lab=1.2)
+barplot(t(pl2),col=colrs,xlab=('Ordered by Name sim.'),font.lab=2,cex.lab=1.2)
+barplot(t(pl3),col=colrs,xlab=('Ordered by Conc. Text sim.'),font.lab=2,cex.lab=1.2)
+barplot(t(pl4),col=colrs,xlab=('Ordered by Description sims.'),font.lab=2,cex.lab=1.2)
+mtext("Similarities Among Non-Matching Pairs per Field",outer=TRUE,font=2,cex=1.3,side=3,adj=.5)
+par(new=TRUE)
+par(mfrow=c(1,1),oma=c(15.5,0,0,0))
+legend('bottom',legend=tx,col=colrs,lty=1,horiz=TRUE,bty='n',lwd=6)
+
+
+pl1=sample.non.matches2[,c(3,7,8)] %>% arrange(desc(name+desc+text))
+pl2=sample.non.matches2[,c(3,7,8)] %>% arrange(desc(name))
+pl3=sample.non.matches2[,c(3,7,8)] %>% arrange(desc(text))
+pl4=sample.non.matches2[,c(3,7,8)] %>% arrange(desc(desc))
+colrs=colrs[c(1,3,4)]
+tx=tx[c(1,3,4)]
+
+plot.new()
+par(mfrow=c(2,2),oma=c(0,0,5,0),mar=c(4,2,2,0))
+barplot(t(pl1),col=colrs,xlab=('Ordered by Sum of 4 sims.'),font.lab=2,cex.lab=1.2)
+barplot(t(pl2),col=colrs,xlab=('Ordered by Name sim.'),font.lab=2,cex.lab=1.2)
+barplot(t(pl3),col=colrs,xlab=('Ordered by Conc. Text sim.'),font.lab=2,cex.lab=1.2)
+barplot(t(pl4),col=colrs,xlab=('Ordered by Description sims.'),font.lab=2,cex.lab=1.2)
+mtext("Similarities Among Non-Matching Pairs per Field (excl. man.)",outer=TRUE,font=2,cex=1.3,side=3,adj=.5)
+par(new=TRUE)
+par(mfrow=c(1,1),oma=c(15.5,0,0,0))
+legend('bottom',legend=tx,col=colrs,lty=1,horiz=TRUE,bty='n',lwd=6)
+```
+
+
+Some of these plots are a bit hard to interpret, but they provide valuable insights. From these plots, it can be concluded that:
+
+* Name is the field that better distinguishes matching and non-matching entries.
+* Manufacturer (edit distance-based) doesn't distinguish well between matches and non-matches. The TF-IDFd manufacturer cosine similarity does even worse in this regard and thus it wasn't even shown in these plots (can be seen from the summary statistics).
+* The concatenated text fields' similarity does a reasonable job at distinguishing non-matches, followed by the description field, but they would miss many matches.
+
+Thus, a possible plan of action would be to try these alternatives:
+
+* Set a cutoff point in name similarity and identify two records as being the same if they are above this threshold. This threshold can be determined by computing the accuracy, precision, recall and F1 that it would have had with this small sample, although this might not necessarily be representative given the huge skew in class proportions.
+* Try a combination of these similarities (name, description and concatenated text) to compe up with a score, and identify an appropirate cut-off threshold for this compound similarity, both with a formula (i.e. logistic regression) and with a simple sum.
+* Try a decision tree with these 3 similarities.
+* Try a Random Forest.
+
+Then pick the one that gives the best results in this small subsample and pick that as the algorithm to follow.
+
+Given that there is a list of matching pairs, I'll also check the accuracy of these 4 paths on the full list of pairs - this however, wouldn't be possible to do in a real situation, as there wouldn't be such list when using real data.
+
+
+## 8. Building the Models
+
+This dataset has an extremely skewed class balance, as only 0.03% of the possible pairs are matches. Most machine learning classifiers benefit from a smartly plannified resampling that balances the classes in the training set, either by upampling or downsampling, so here I'll take the approach of upsampling to balance off the matches and non-matches, considering that there are only 100 positve examples (this upsampling is done by bootstrapping with replacement from the minority class). As the machine-learning-based models here will be trained with an artificially-balanced sample, their performance cannot be reliably evaluated with cross-validation and it's necessary to build a small validation set.
+
+```{r,cache=TRUE}
+#Constructing the set
+sample.matches$label=1
+sample.non.matches$label=0
+names(sample.non.matches)=names(sample.matches)
+
+library(caret)
+trainset=rbind(sample.matches,sample.non.matches)
+trainset$label=as.factor(trainset$label)
+
+set.seed(100)
+train.sample=sample(1:dim(trainset)[1],round(0.7*dim(trainset)[1],0))
+trainset=trainset[train.sample,]
+valset=trainset[-train.sample,]
+trainset=upSample(x=trainset[,c('name','man','desc','text')],y=trainset[,'label'],yname='label')
+
+
+valset.simple=rbind(sample.matches,sample.non.matches)
+
+f_1=function(prec,rec){
+  return (2*prec*rec/(prec+rec))
+}
+
+get.results=function(probs,truth,grid){
+  res=data.frame(matrix(nrow=length(grid),ncol=5))
+  names(res)=c('thr',"accuracy",'prec','rec','f1')
+  counter=0
+  for (thr in grid){
+    counter=counter+1
+    pred=1*(probs>thr)
+    res$thr[counter]=thr
+    tp=sum((pred==1) * (truth==1))
+    tn=sum((pred==0) * (truth==0))
+    fp=sum((pred==1) * (truth==0))
+    fn=sum((pred==0) * (truth==1))
+    res$accuracy[counter]=(tp+tn)/(tp+fp+fn+tn)
+    res$prec[counter]=tp/(tp+fp)
+    res$rec[counter]=tp/(tp+fn)
+    res$f1[counter]=f_1(res$prec[counter],res$rec[counter])
+  }
+  res$thr=grid
+  print(res)
+
+}
+```
+
+```{r,message=FALSE,warning=FALSE,cache=TRUE}
+#Name similarity
+grid=c(.01,.02,.05,.1,.15,.25,.4,.5,.6,.7,.9)
+get.results(valset.simple$name,valset.simple$label,grid)
+```
+
+It can be seen that this simple technique did a very good job. A threshold between .4 and .6 name similarity seems to give the best results.
+
+```{r,cache=TRUE}
+#Simple sum
+get.results(valset.simple$name+valset.simple$desc+valset.simple$text,valset.simple$label,c(.5,1,1.5,2,2.5))
+```
+
+This simple sum seemed to give resonable results so far, with thresholds of .5 and 1.
+
+```{r,message=FALSE,warning=FALSE,cache=TRUE}
+#The other methods require more data processing
+valset$label=as.factor(valset$label)
+trainset$label=as.factor(trainset$label)
+
+#Logistic regression
+lr=glm(label~name+man+desc+text,data=trainset,family="binomial")
+lr.probs=predict(lr,valset,type='response')
+get.results(lr.probs,valset$label,grid)
+```
+
+This simple logistic regression seems to do a reasonable job, achieving more balanced results, but still worse than name similarity.
+
+```{r,cache=TRUE}
+#Decision tree
+library(C50)
+tree=C5.0(label~name+man+desc+text,data=trainset)
+tree.res=predict(tree,valset,type='class')
+get.results.tree=function(pred,truth){
+  res=data.frame(matrix(nrow=1,ncol=4))
+  names(res)=c("accuracy",'prec','rec','f1')
+  counter=0
+  tp=sum((pred==1) * (truth==1))
+  tn=sum((pred==0) * (truth==0))
+  fp=sum((pred==1) * (truth==0))
+  fn=sum((pred==0) * (truth==1))
+  res$accuracy=(tp+tn)/(tp+fp+fn+tn)
+  res$prec=tp/(tp+fp)
+  res$rec=tp/(tp+fn)
+  res$f1=f_1(res$prec,res$rec)
+  print(res)
+
+}
+get.results.tree(tree.res,valset$label)
+```
+
+This decision tree seems significantly better than the logistic regression, but not as good as the name similarity alone.
+
+
+More complex models such as Random Forests couldn't be used here due to not having enough memory for a dataset of this size.
+
+Thus, based on this evidence, the most sensible thing would be to keep the name similarity at 0.4, but it's also interesting to see how would have been the performance of other methods.
+
+
+## 9. Evaluating the models
+
+
+This would normally be impossible to do in a real situation, but the models can be evaluated with the list of matching pairs that is available for this dataset.
+
+For this, I'll use the list of pairs (discarding the ones used to build the model) with their labels and a new up-sampled training set that includes all of the records that were previously used as validation too:
+
+```{r,cache=TRUE}
+library(caret)
+valset.simple$label=as.factor(valset.simple$label)
+trainset=upSample(x=valset.simple[,c('name','man','desc','text')],y=valset.simple[,'label'],yname='label')
+```
+
+
+Finally, the models can be evaluated on their results on the full 4M pairs of products:
+
+```{r,message=FALSE,warning=FALSE,cache=TRUE}
+pred.sum05=1*(all.pairs$sum>=.5)
+pred.sum1=1*(all.pairs$sum>=1)
+pred.sum15=1*(all.pairs$sum>=1.5)
+
+pred.name4=1*(all.pairs$name>.4)
+pred.name6=1*(all.pairs$name>.6)
+
+lr=glm(label~name+man+desc+text,data=trainset,family=binomial(link='probit'))
+pred.lr.prob=predict(lr,all.pairs,type='response')
+pred.lr7=1*(pred.lr.prob>=.7)
+pred.lr99=1*(pred.lr.prob>=.99)
+
+library(C50)
+tree=C5.0(label~name+man+desc+text,data=trainset)
+tree.res=predict(tree,all.pairs,type='class')
+
+preds=list(pred.sum05,pred.sum1,pred.sum15,pred.name4,pred.name6,pred.lr7,pred.lr99,tree.res)
+res=as.data.frame(matrix(nrow=8,ncol=6))
+names(res)=c('method','threshold','accuracy','precision','recall','f1')
+res$method=c('simple sim. sum','simple sim. sum','simple sim. sum','name sim','name sim','logistic regression','logistic regression','decision tree')
+res$threshold=c(.05,1,1.5,.4,.6,.7,.99,.5)
+counter=0
+for (m in preds){
+  counter=counter+1
+  tp=sum((m==1) * (all.pairs$label==1))
+  tn=sum((m==0) * (all.pairs$label==0))
+  fp=sum((m==1) * (all.pairs$label==0))
+  fn=sum((m==0) * (all.pairs$label==1))
+  res$accuracy[counter]=(tp+tn)/(tp+fp+fn+tn)
+  res$precision[counter]=tp/(tp+fp)
+  res$recall[counter]=tp/(tp+fn)
+  res$f1[counter]=f_1(res$prec[counter],res$rec[counter])
+}
+print(res)
+```
+
+It's no surprise that all of these methods have accuracies close to 100%, since only 0.03% of the pairs are matches. Thus, they should be judged by their precision, recall and F1. All of them did well on recall (that is, they found the matching pairs), but with extremely low precision (which means that most of their results are false positives).
+
+Overall, the name similarity turned out to provide the best mixture, but still at most around 40% precision. Logistic regression did very poorly in terms of precision, no matter how high the threshold.
+
+## 10. Conclusion
+
+Overall, it would have been impossible to properly join a dataset from these two sources automatically. However, the methods here did a decent job at reducing the search space from millions to a few thousands. If a high recall is desired, the list outputed by the logistic regression could be examined manually, and 1 in 6 of its outputs would be a match. If a higher precision is desired, the name similarity could be tried and around 2 in 5 of its outputs would be a correct match.
+
+Alternatively, it could also be seen as how many records would have to be examined - supposing that records are examined in decreasing order of predicted matching probability - to find a certain percentage of the true matches (known as lift curve).
+
+```{r,cache=TRUE,message=FALSE,warning=FALSE}
+#Constructing the data points
+library(dplyr)
+end=dim(all.pairs)[1]
+cum.matches.name=0
+cum.matches.lr=0
+cum.time=as.data.frame(matrix(nrow=end,ncol=3))
+names(cum.time)=c('picked','match.n','match.lr')
+all.pairs$lr=pred.lr.prob
+cum.time$picked=1:end
+lr=all.pairs %>% arrange(desc(lr))
+nm=all.pairs %>% arrange(desc(name))
+
+cum.time$`match.n`=cumsum(1*(nm$label==1))
+cum.time$`match.lr`=cumsum(1*(lr$label==1))
+
+#Rescaling the numbers
+tot.match=sum(1*(all.pairs$label==1))
+tot.picks=dim(all.pairs)[1]
+cum.time$`match.n`=(cum.time$`match.n`)/tot.match
+cum.time$`match.lr`=cum.time$`match.lr`/tot.match
+cum.time$picked=cum.time$picked/tot.picks
+
+#Then plotting them
+library(ggthemes)
+colors=tableau_color_pal()(3)
+plot(cum.time$picked,cum.time$match.lr,xlim=c(0,1),ylim=c(0,1),lty=1,lwd=1,xlab='Proportion of records examined',ylab='Proportion of matches found',main='Lift Curve',col=colors[1])
+par(new=TRUE)
+plot(cum.time$picked,cum.time$match.n,xlim=c(0,1),ylim=c(0,1),lty=1,lwd=1,col=colors[2],xlab='',ylab='')
+abline(0,1,col=colors[3])
+legend('bottomright',legend=c('Logistic Regression','Name Similarity','Baseline'),col=colors,lty=1,lwd=3)
+```
+
+As can be seen from this plot, the lift is huge, so it's better to examine it more closely and with numbers:
+
+```{r,cache=TRUE}
+cum.time$picked=1:end
+plot(cum.time$picked,cum.time$match.lr,xlim=c(0,7000),ylim=c(0,1),lty=1,lwd=1,xlab='Number of records examined',ylab='Proportion of matches found',main='Lift Curve',col=colors[1])
+par(new=TRUE)
+plot(cum.time$picked,cum.time$match.n,xlim=c(0,7000),ylim=c(0,1),lty=1,lwd=1,col=colors[2],xlab='',ylab='')
+abline(0,1/tot.picks,col=colors[3])
+legend('bottomright',legend=c('Logistic Regression','Name Similarity','Baseline'),col=colors,lty=1,lwd=3)
+grid()
+```
+
+As can be seen, with the first 3,000 highest predictions, around 80% of the remaining 1,200 matching pairs are identified with either method, with 32% of them being matches (compared to 0.03% matches with random choices), which, although far from perfect, is a huge improvement.

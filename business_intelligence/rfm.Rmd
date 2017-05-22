@@ -1,0 +1,386 @@
+---
+title: "RFM Analysis"
+author: "David Cortes"
+date: "March 27, 2016"
+output:
+  html_document:
+    toc: true
+---
+
+This project consists in using transaction data from an online application (software) to calculate the lifetime value of customers, see which customers are at risk of defecting and finding segments (groups of similar users) from the users that are still active, based on RFM analysis (Recency-Frequency-Monetary). The data comes in the form of a table with columns User ID, date of install, date of payment and transaction amount. The algorithms are described in [“Counting your customers” the easy way: An alternative to the Pareto/NBD model](http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf) and [RFM and CLV: Using iso-value curves for customer base analysis](http://brucehardie.com/papers/rfm_clv_2005-02-16.pdf).
+
+Transactions can happen at any moment and so one of the problems is identifying whether a given user is still active (i.e. will pay again) or not. In this regard, the date of the last transactions and the frequency with which previous transactions from this user happened can help to build a probabilistic model for future transactions.
+
+From this, residual lifetime value can be estimated by summing the expected future transactions and applying a discount rate to them, according to how far in the future they will happen.
+
+The analyses performed here consider transactions on a weekly basis (i.e. did at least one transaction occur this week or not), since this leads to better predictive performance than using daily data.
+
+
+# 1 . Loading and Formatting the Data
+
+```{r loading the data,cache=TRUE}
+#loading the data
+gt <- read.csv("data.csv", sep=";")
+
+gt$transaction_date=as.Date(gt$transaction_date,"%d.%m.%Y")
+gt$install_date=as.Date(gt$install_date,"%d.%m.%Y")
+gt$value=gt$value/100
+head(gt,10)
+```
+
+# 2. Examining the relationship between average transaction value and frequency of transactions
+
+```{r relationship F-M,warning=FALSE,message=FALSE,fig.show="hold",cache=TRUE}
+#examining the relationship between average transaction value and number of transactions (total, by day and by week)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(scales)
+freq.value.total=gt %>% group_by(id) %>% summarize(freq=n(),val=mean(value)) %>% select(-id) %>% filter(freq>1)
+freq.value.day=gt %>% group_by(id,transaction_date) %>% summarize(value=sum(value)) %>% group_by(id) %>% summarize(freq=n(),val=mean(value)) %>% select(-id) %>% filter(freq>1)
+freq.value.week=gt %>% mutate(transaction_date=as.integer(difftime(transaction_date,min(transaction_date),units="weeks"))) %>% group_by(id,transaction_date) %>% summarize(value=sum(value)) %>% group_by(id) %>% summarize(freq=n(),val=mean(value)) %>% select(-id) %>% filter(freq>1)
+
+pl=freq.value.total %>% group_by(freq) %>% summarize(value=mean(val))
+p1=ggplot(pl,aes(freq,value))+geom_line()+geom_smooth()+scale_y_continuous(labels=dollar)+ylab("Average Transaction Value")+xlab("Numer of Purchases")
+pl=freq.value.day %>% group_by(freq) %>% summarize(value=mean(val))
+p2=ggplot(pl,aes(freq,value))+geom_line()+geom_smooth()+scale_y_continuous(labels=dollar)+ylab("Average Transaction Value")+xlab("Numer of Days with Purchases")
+pl=freq.value.week %>% group_by(freq) %>% summarize(value=mean(val))
+p3=ggplot(pl,aes(freq,value))+geom_line()+geom_smooth()+scale_y_continuous(labels=dollar)+ylab("Average Transaction Value")+xlab("Numer of Weeks with Purchases")
+grid.arrange(p1,p2,p3)
+
+ggplot(freq.value.week,aes(freq,val,group=freq))+geom_boxplot()+scale_y_log10(labels=dollar)+ylab("Average Transaction Value (log scale)")+xlab("Numer of Weeks with Purchases")
+
+#examining correlation numbers
+print("Correlations between: ");paste0("Number of purchases and average transaction value: ",round(cor(freq.value.total)[2],2));paste0("Number of days with purchases and average money spent in a day: ",round(cor(freq.value.day)[2],2));paste0("Number of weeks with purchases and average money spent in a week: ",round(cor(freq.value.week)[2],2))
+
+```
+
+There seems to be a correlation between these two, but it's small in relationship to the huge variability in average transaction values and tends to level-off with number of transactions, so it's probably still adequate to use models for estimating number of transactions and using a constant transaction value for LTV.
+
+# 3. Evaluating different models for predicting transactions
+
+```{r models for transactions,warning=FALSE,message=FALSE,cache=TRUE,results='hide'}
+#examining different models for LTV taking as a cohort the customers that made a transaction during the first week
+library(BTYD)
+
+#taking the cohort
+sample.cohort=gt %>% mutate(week=as.integer(difftime(transaction_date,min(transaction_date),units="weeks"))) %>% group_by(id) %>% summarize(first=min(week)) %>% filter(first==0) %>% select(-first)
+
+sample.cohort=gt$id %in% sample.cohort$id
+print(paste0("Number of transactions in the sample cohort: ",paste0(round(sum(sample.cohort)*100/dim(gt)[1],2),"%")))
+
+#splitting the data into calibration/holdout period
+split.date=as.Date("2014-03-06")
+gt.sample=gt[sample.cohort,]
+elog.day=data.frame(cust=gt.sample$id,date=gt.sample$transaction_date,sales=gt.sample$value)
+
+#generating useful data by day
+m1.data=dc.ElogToCbsCbt(elog.day,per="day",T.cal = split.date,merge.same.date = TRUE)
+m2.data=dc.ElogToCbsCbt(elog.day,per="day",T.cal = split.date,merge.same.date = FALSE)
+
+#generating useful data by week
+starting.date=min(gt$transaction_date)
+gt.sample=gt.sample %>% mutate(transaction_date=as.integer(difftime(transaction_date,min(transaction_date),units="weeks"))) %>% group_by(id,transaction_date) %>% summarize(value=sum(value)) %>% mutate(transaction_date=starting.date+7*transaction_date)
+elog.week=data.frame(cust=gt.sample$id,date=gt.sample$transaction_date,sales=gt.sample$value)
+m3.data=dc.ElogToCbsCbt(elog.week,per="week",T.cal = split.date,merge.same.date = TRUE,statistic="freq")
+
+#this was taken from the BTYD guide
+tot.cbt=dc.CreateFreqCBT(elog.day)
+d.track.data=rep(0,370)
+for (i in colnames(tot.cbt)){
+  date.index= difftime(as.Date(i),starting.date)+1
+  d.track.data[date.index]=sum(tot.cbt[,i])
+}
+w.track.data=rep(0,floor(370/7))
+for (j in seq(1,floor(370/7))){
+  w.track.data[j]=sum(d.track.data[(j*7-6):(j*7)])
+}
+```
+```{r bg/nbd by day,warning=FALSE,message=FALSE,fig.show="hold",cache=TRUE,results=FALSE}
+##########
+#bg/nbd model by day, grouping transactions
+#estimating parameters
+m.bgnbd.day=bgnbd.EstimateParameters(m1.data$cal$cbs)
+
+#checking its fit
+invisible(bgnbd.PlotFrequencyInCalibration(m.bgnbd.day,m1.data$cal$cbs,20))
+
+#checking predictive performance
+invisible(bgnbd.PlotTrackingInc(m.bgnbd.day,m1.data$cal$cbs[,"T.cal"],370,d.track.data,title="Tracking Daily Transactions",xlab="Days since first payment"))
+invisible(bgnbd.PlotTrackingCum(m.bgnbd.day,m1.data$cal$cbs[,"T.cal"],370,cumsum(d.track.data),title="Tracking Daily Transactions",xlab="Days since first payment")
+)
+
+##the model had a poor fit and poor predictive power
+```
+```{r bg/nbd by day ungrouped,warning=FALSE,message=FALSE,fig.show="hold",cache=TRUE}
+#########
+#bg/nbd model by day, without grouping transactions
+m.bgnbd.day2=bgnbd.EstimateParameters(m2.data$cal$cbs)
+invisible(bgnbd.PlotTrackingInc(m.bgnbd.day2,m2.data$cal$cbs[,"T.cal"],370,d.track.data,title="Tracking Daily Transactions",xlab="Days since first payment"))
+invisible(bgnbd.PlotTrackingCum(m.bgnbd.day2,m2.data$cal$cbs[,"T.cal"],370,cumsum(d.track.data),title="Tracking Daily Transactions",xlab="Days since first payment"))
+
+##this model fared somewhat better
+```
+```{r bg/nbd by week,warning=FALSE,message=FALSE,fig.show="hold",cache=TRUE,result="hide"}
+#bg/nbd model by week
+m.bgnbd.week=bgnbd.EstimateParameters(m3.data$cal$cbs)
+invisible(bgnbd.PlotFrequencyInCalibration(m.bgnbd.week,m3.data$cal$cbs,20))
+invisible((bgnbd.PlotTrackingInc(m.bgnbd.week,m3.data$cal$cbs[,"T.cal"],370,w.track.data)))
+invisible((bgnbd.PlotTrackingCum(m.bgnbd.week,m3.data$cal$cbs[,"T.cal"],370,cumsum(w.track.data))))
+
+##this model seems reasonable
+```
+
+```{r bg/bb by day,warning=FALSE,message=FALSE,fig.show="hold",cache=TRUE}
+########
+#bg/bb model by day
+cal.rf.matrix=dc.MakeRFmatrixCal(m1.data$cal$cbs[,"x"],m1.data$cal$cbs[,"t.x"],max(m1.data$cal$cbs[,"t.x"]))
+m.bgbb.day=bgbb.EstimateParameters(cal.rf.matrix)
+invisible(bgbb.PlotFrequencyInCalibration(m.bgbb.day,cal.rf.matrix))
+actual.inc.repeat.transactions.d=gt[sample.cohort,] %>% group_by(transaction_date) %>% summarize(val=n()) %>% select(-transaction_date) %>% as.data.frame()
+actual.inc.repeat.transactions.d=as.vector(actual.inc.repeat.transactions.d$val)
+invisible(bgbb.PlotTrackingInc(m.bgbb.day,cal.rf.matrix,actual.inc.repeat.transactions.d))
+invisible(bgbb.PlotTrackingCum(m.bgbb.day,cal.rf.matrix,cumsum(actual.inc.repeat.transactions.d)))
+##very poor fit
+```
+```{r bg/bb by week,warning=FALSE,message=FALSE,fig.show="hold",cache=TRUE}
+#bg/bb model by week
+cal.rf.matrix.week=dc.MakeRFmatrixCal(m3.data$cal$cbs[,"x"],m3.data$cal$cbs[,"t.x"],max(m3.data$cal$cbs[,"t.x"]))
+m.bgbb.week=bgbb.EstimateParameters(cal.rf.matrix.week)
+invisible(bgbb.PlotFrequencyInCalibration(m.bgbb.week,cal.rf.matrix.week))
+
+actual.inc.repeat.transactions=gt.sample %>% group_by(transaction_date) %>% summarize(val=n()) %>% select(-transaction_date) %>% as.data.frame()
+actual.inc.repeat.transactions=as.vector(actual.inc.repeat.transactions$val)
+invisible(bgbb.PlotTrackingInc(m.bgbb.week,cal.rf.matrix.week,actual.inc.repeat.transactions))
+invisible(bgbb.PlotTrackingCum(m.bgbb.week,cal.rf.matrix.week,cumsum(actual.inc.repeat.transactions)))
+
+##a lot better than the previous, seems to converge in the end, will be used for LTV estimation
+```
+
+
+# 4. Building a model for residual discounted lifetime value for all customers
+
+These models use discounted expected residual transactions, constant transaction value (different for each customer, following a gamma-gamma model), and an annual discount rate of 15% (corresponding to a continuous rate of 0.0027)
+
+```{r ltv model,warning=FALSE,message=FALSE,cache=TRUE,results='hide',fig.show="hold"}
+#building the model with all the data
+elog=gt %>% mutate(transaction_date=as.integer(difftime(transaction_date,min(transaction_date),units="weeks"))) %>% group_by(id,transaction_date) %>% summarize(value=sum(value)) %>% mutate(transaction_date=starting.date+7*transaction_date)
+elog=data.frame(cust=elog$id,date=elog$transaction_date,sales=elog$value)
+m.data=dc.ElogToCbsCbt(elog,per="week",merge.same.date = TRUE,statistic="freq")
+rf.matrix=dc.MakeRFmatrixCal(m.data$cal$cbs[,"x"],m.data$cal$cbs[,"t.x"],max(m.data$cal$cbs[,"t.x"]))
+m.bgbb.final=bgbb.EstimateParameters(rf.matrix)
+bgbb.PlotFrequencyInCalibration(m.bgbb.final,rf.matrix) #this time it seems to give a better fit
+
+#calculating discounted expected residual transactions, for all customers in the database
+DERT=bgbb.DERT(m.bgbb.final,m.data$cal$cbs[,"x"],m.data$cal$cbs[,"t.x"],m.data$cal$cbs[,"T.cal"],0.0027)
+
+#calculating discounted expected residual transactions, for a new customer
+DERT.new=bgbb.DERT(m.bgbb.final,0,0,0,0.0027)
+
+
+#calculating spending per customer, g/g model
+spend.data=elog %>% group_by(cust) %>% summarize(m.x.vector=mean(sales),x.vector=n())
+m.spend=spend.EstimateParameters(spend.data$m.x.vector,spend.data$x.vector)
+cust.spend=spend.expected.value(m.spend, spend.data$m.x.vector, spend.data$x.vector)
+new.spend=m.spend[1]*m.spend[2]*m.spend[3] #this is the expected value from a gamma distribution
+
+#finally, calculating customer lifetime value
+LTV.custs=DERT*cust.spend
+LTV.new=DERT.new*new.spend
+```
+
+#### Estimated discounted lifetime value for an average new customer
+```{r new cust,cache=TRUE}
+print(LTV.new)
+```
+
+#### Top-50 most profitable customers, by estimated residual discounted lifetime value
+```{r old custs,cache=TRUE}
+print(head(LTV.custs[order(-LTV.custs)],50))
+```
+
+# 5. Summary statistics and visualizations
+
+```{r stats viz,warning=FALSE,message=FALSE,cache=TRUE,fig.show="hold"}
+#most common payments
+print("Most common payments")
+print(head(table(gt$value)[order(-table(gt$value))]))
+
+#estimating average paying lifecycle
+last.date=max(gt$transaction_date)
+churned.users=gt %>% group_by(id) %>% summarize(recency=as.integer(last.date-max(transaction_date))) %>% filter(recency>=90)
+churned.users.ids=unique(churned.users$id)
+paying.cycles=gt %>% filter(install_date>=min(gt$transaction_date)) %>% filter(!(id %in% churned.users.ids)) %>% group_by(id) %>% summarize(paycycle=as.integer(max(transaction_date)-min(transaction_date)))
+print(paste0(paste0("Average observed paying cycle: ",round(mean(paying.cycles$paycycle),2))," days"));print(paste0(paste0("Median observed paying cycle: ",round(median(paying.cycles$paycycle),2))," days"))
+ggplot(paying.cycles,aes(paycycle))+geom_density(fill='darkorange')+xlab("Days of activity")+ylab("Estimated Density")+theme_bw(base_size=18)+ggtitle("Distribution of Paying Cycles")
+
+#average transactions and value by daily cohorts
+pl=gt %>% group_by(id,transaction_date,install_date) %>% summarize(value=sum(value)) %>% mutate(trans.days.since.inst=as.numeric(transaction_date-install_date)) %>% group_by(trans.days.since.inst) %>% summarize(mean.val=mean(value))
+ggplot(pl,aes(x=trans.days.since.inst,y=mean.val))+geom_line()+geom_smooth()+xlab("Days since install")+ylab("Average money spent \n(when there is a transaction)")+scale_y_continuous(label=dollar)+theme(text = element_text(size=18))
+
+pl=gt %>% group_by(id,transaction_date,install_date) %>% summarize(n.trans=n()) %>% mutate(trans.days.since.inst=as.numeric(transaction_date-install_date)) %>% group_by(trans.days.since.inst) %>% summarize(mean.n.trans=mean(n.trans))
+ggplot(pl,aes(x=trans.days.since.inst,y=mean.n.trans))+geom_line()+geom_smooth()+xlab("Days since install")+ylab("Average number of transactions \n(when there is a transaction)")+theme(text = element_text(size=18))
+
+#average accumulated transactions
+temp=gt %>% filter(install_date>=min(gt$transaction_date)) %>% group_by(id,transaction_date,install_date) %>% summarize(n.trans=n()) %>% mutate(trans.days.since.inst=as.numeric(transaction_date-install_date)) %>% arrange(id,trans.days.since.inst)
+pl=temp %>% group_by(id,trans.days.since.inst) %>% summarize(n.trans=sum(n.trans)) %>% group_by(id) %>% mutate(cum.trans=cumsum(n.trans)) %>% select(-n.trans)
+pl=temp %>% mutate(id2=paste0(id,as.numeric(install_date))) %>% group_by(id2) %>% mutate(cum.trans=cumsum(n.trans)) %>% select(id2,trans.days.since.inst,cum.trans)
+
+custs.zero.order=pl %>% filter(trans.days.since.inst==0)
+custs.zero.order=as.vector(unique(custs.zero.order$id2))
+custs.no.zero=as.vector(unique(pl$id2))
+custs.no.zero=custs.no.zero[!(custs.no.zero %in% custs.zero.order)]
+added.cust.zero=data.frame(id2=custs.no.zero, trans.days.since.inst=rep(0,length(custs.no.zero)), cum.trans=rep(0,length(custs.no.zero)))
+pl=rbind(pl,added.cust.zero)
+pl=as.data.frame(pl)
+
+df=data.frame(days=seq(1,max(pl$trans.days.since.inst)),cum.avg.trans=rep(NA,max(pl$trans.days.since.inst)))
+for (i in 1:dim(df)[1]){
+  d=df$days[i]
+  tr=pl %>% filter(trans.days.since.inst<=d) %>% group_by(id2) %>% filter(trans.days.since.inst==max(trans.days.since.inst))
+  tr=mean(tr$cum.trans)
+  df$cum.avg.trans[i]=tr
+}
+
+ggplot(df,aes(x=days,y=cum.avg.trans))+geom_line(color="navy",size=2)+theme_bw(base_size=18)+xlab("Days since last install")+ylab("Average transactions so far")+ggtitle("Transactions since installing")
+
+#values by day of the week
+pl=gt %>% mutate(day=weekdays(transaction_date)) %>% group_by(day) %>% summarize(trans=n(),avg.val=mean(value))
+pl=data.frame(day=c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")) %>% left_join(pl)
+pl$d=1:7
+pl$d=as.factor(pl$d)
+levels(pl$d)=pl$day
+
+p1=ggplot(pl,aes(d,trans))+geom_bar(stat="identity",fill="darkred")+xlab("")+ylab("Number of Transactions\n (all customers)")+scale_y_continuous(label=comma)+theme_bw()
+p2=ggplot(pl,aes(d,avg.val))+geom_bar(stat="identity",fill="darkgreen")+xlab("")+ylab("Average transaction value")+scale_y_continuous(label=dollar)+theme_bw()
+grid.arrange(p1,p2)
+
+#taking cohorts by day of install
+cohorts=gt %>% filter(install_date>=min(gt$transaction_date)) %>% group_by(id) %>% mutate(first.inst=min(install_date)) %>% mutate(days.since.inst=as.integer(transaction_date-first.inst))
+cutoff=max(gt$transaction_date)-200
+cohorts=cohorts %>% filter(first.inst<=cutoff) %>% filter(days.since.inst<=200)
+pl=cohorts %>% group_by(id,first.inst) %>% summarize(trans=n()) %>% group_by(first.inst) %>% summarize(mean.n.trans=mean(trans))
+p1=ggplot(pl,aes(first.inst,mean.n.trans))+geom_line()+geom_smooth()+ylab("Average num. of transactions\n in the next 200 days")+xlab("Day of first install")+scale_x_date(labels=date_format("%b %Y"))
+
+
+pl=cohorts %>% group_by(id,first.inst) %>% summarize(money=sum(value)) %>% group_by(first.inst) %>% summarize(money=median(money))
+p2=ggplot(pl,aes(first.inst,money))+geom_line()+geom_smooth()+ylab("Median of money spent\n in the next 200 days")+xlab("Day of first install")+scale_x_date(labels=date_format("%b %Y"))+scale_y_continuous(label=dollar)
+
+grid.arrange(p1,p2)
+
+
+#time since last transaction
+pl=gt %>% arrange(id,transaction_date) %>% group_by(id) %>% mutate(lapse=as.integer(transaction_date-lag(transaction_date))) %>% filter(!is.na(lapse))
+pl=data.frame(lapse=pl$lapse)
+pl$lapse[pl$lapse>=100]=100
+ggplot(pl,aes(lapse))+geom_histogram(binwidth=1,fill="navy",aes(y=..count../sum(..count..)))+scale_x_continuous(breaks=c(0,25,50,75,100),labels=c(0,25,50,75,"100+"))+theme_bw(base_size=16)+scale_y_continuous(label=percent)+ylab("Percent of Transactions")+xlab("Days since last transaction")+ggtitle("Inter-transaction time")
+```
+
+
+# 6. Users at risk of defecting
+
+```{r risk def,cache=TRUE,results="asis"}
+#detecting at which moment a user is more likely to abandon
+possible.situations=expand.grid(x=1:30,t.x=1:30,n.cal=1:30)
+
+#filtering impossible cases
+possible.situations=possible.situations %>% filter(x<=t.x) %>% filter(t.x<=n.cal) 
+
+#filtering unlikely cases
+possible.situations=possible.situations %>% filter(!(x==1 & t.x>5)) %>% filter(x!=t.x) %>% filter((x/t.x)<=.7) %>% arrange(x,t.x,n.cal)
+
+#doing the calculations
+possible.situations$p=bgbb.PAlive(m.bgbb.final, possible.situations$x, possible.situations$t.x, possible.situations$n.cal)
+possible.situations=possible.situations %>% group_by(x,t.x) %>% mutate(p.change=-(p-lag(p)))
+possible.situations=possible.situations %>% filter(!is.na(p.change)) %>%  filter(p>=.5) %>% group_by(x,t.x) %>% filter(p.change==max(p.change)) %>% as.data.frame() %>% arrange(desc(p.change))
+
+pl=data.frame(possible.situations$x,possible.situations$t.x,possible.situations$n.cal-possible.situations$t.x,possible.situations$p,possible.situations$p.change)
+names(pl)=c("Weeks with Transactions","Week of Last Transaction (since 1st trans)","Weeks without transaction","Probability of continuing payments","Decrease since last week")
+
+library(xtable)
+pl=xtable(pl[1:35,])
+print(pl,floating=FALSE,type="html",include.rownames = FALSE)
+```
+
+# 7. Finding segments
+
+```{r viz,warning=FALSE,message=FALSE,cache=TRUE,results='hide',fig.show="hold"}
+#singling out churned users
+last.date=max(gt$transaction_date)
+churned.users=gt %>% group_by(id) %>% summarize(recency=as.integer(last.date-max(transaction_date))) %>% filter(recency>=90)
+churned.users.ids=unique(churned.users$id)
+remaining.users=gt[!(gt$id %in% churned.users.ids),]
+
+#singling out new customers
+new.custs=remaining.users %>% group_by(id) %>% summarize(trans=n()) %>% filter(trans==1) %>% select(id) %>% as.vector()
+old.custs=remaining.users[!(remaining.users$id %in% new.custs$id),]
+
+#average payment, average number of transactions, tenure, recency
+old.custs.vars=old.custs %>% group_by(id) %>% summarize(avg.pay=mean(value),n.trans=n(),tenure=as.integer(max(transaction_date)-min(install_date)),recency=as.integer(last.date-max(transaction_date)))
+
+#inter-transaction time
+inter.t.t=old.custs %>% arrange(id,transaction_date) %>% group_by(id) %>% mutate(lapse=as.integer(transaction_date-lag(transaction_date))) %>% filter(!is.na(lapse)) %>% group_by(id) %>% summarize(inter.t.t=mean(lapse))
+old.custs.vars=old.custs.vars %>% left_join(inter.t.t)
+
+#standardizing variables
+clust.data=as.data.frame(old.custs.vars)
+clust.data$id=NULL
+clust.data$avg.pay=log(clust.data$avg.pay)
+clust.data$n.trans=log(clust.data$n.trans)
+clust.data$inter.t.t=log(clust.data$inter.t.t+1)
+
+library(caret)
+pp=preProcess(clust.data,method=c("center","scale"))
+clust.data=predict(pp,clust.data)
+clust.data$inter.t.t=clust.data$inter.t.t/1.5
+
+#determining principal components to use later
+names(clust.data)=c("Payment \nAmount","Num. \nTransactions","Days since \ninstall","Days since \nlast payment","Time between \npayments")
+pc.data=prcomp(clust.data)
+var.axis1=(pc.data$sdev[1]^2)/(sum(pc.data$sdev^2))
+var.axis2=(pc.data$sdev[2]^2)/(sum(pc.data$sdev^2))
+
+#determining the number of clusters
+set.seed(1)
+clusts.sse=rep(NA,9)
+for (i in 2:10){
+  clusts.sse[i-1]=kmeans(clust.data,centers=i,iter.max=20,nstart=10)$withinss
+}
+plot(x=2:10,y=clusts.sse,type='b',xlab="Number of Clusters",ylab="Within group SSE",main="Determining the number of clusters")
+
+#clustering with optimal number of segments
+set.seed(1)
+clusts6=kmeans(clust.data,centers=6,iter.max=30,nstart=20)
+
+#visualizing these clusters
+library(ggbiplot)
+ggbiplot(pc.data,varname.size=4,labels.size=.1,var.axes=TRUE,alpha=0.2,groups=as.factor(clusts6$cluster),elipse=TRUE)+ guides(colour = guide_legend(override.aes = list(size=10,alpha=1)))+ggtitle("Visualizing segments")+theme(text = element_text(size=18))
+```
+
+# 8. Examining the obtained segments
+
+```{r,cache=TRUE,warning=FALSE,message=FALSE}
+segmented=old.custs.vars
+segment=as.factor(paste0("Segment number ",clusts6$cluster))
+segmented$segment=segment
+segmented=segmented %>% left_join(as.data.frame(table(segment))) %>% select(-id,-segment)
+names(segmented)=c("Payment Amount","Num. Transactions","Days since install","Days since last payment","Time between payments","Users in segment")
+segmented$ID=NULL
+by(segmented, segment, apply,2,mean)
+```
+
+These segments consider only users that have a high probability of still being active.
+
+Describing these segments:
+
+* Segment 1: high payments but which don’t happen very often, old users.
+
+* Segment 2: active old users who make low infrequent payments.
+
+* Segment 3: low infrequent payments and abandoning. Less attractive segment.
+
+* Segment 4: new users who made frequent small payments and are abandoning. Attention needs to be payed to this segment.
+
+* Segment 5: middle-value payments that happen frequently, but are stopping. This segment needs to be monitored, as users are at risk of abandoning.
+
+* Segment 6: middle-value payments that happen very frequently, from old users, recently active. This seems to be the most valuable segment.

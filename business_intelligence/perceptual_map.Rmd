@@ -1,0 +1,211 @@
+---
+title: "Perceptual Maps"
+author: "David Cortes"
+date: "June 21, 2015"
+output:
+  html_document:
+    toc: true 
+---
+
+#Visualizing Brand Perception
+
+##Description
+
+This analysis was produced from the results of a small survey on 9 undergraduate business students, so the results are not the most representative, but the methodology and interpretation would be the same for larger sample sizes. The survey consisted on asking students to indicate their agreement, on a 1-7 scale, with a series of statements about laptops from different brands. For example, an item in the questionnaire would look like this:
+
+```
+Samsung laptops are:
+Reliable: (1) (2) (3) (4) (5) (6) (7)
+Expensive: (1) (2) (3) (4) (5) (6) (7)
+(...)
+
+If you are unsure about any item, please leave it blank.
+```
+
+The answers were then transcripted into a matrix with the ratings by attributes, with one row per brand rated for each participant. You can find the raw data [here](https://github.com/david-cortes/portfolio/blob/master/marketing/survey.csv).
+
+
+##Analysis
+```{r}
+#Loading and processing the data
+data=read.csv("survey.csv")
+data=data[complete.cases(data),]
+rownames(data)=NULL
+```
+```{r}
+#Putting it in the right format
+suppressMessages(require(dplyr))
+data=data %>% group_by(brand) %>% summarise_each(rep("mean",8))
+names(data)=gsub("_mean","",names(data))
+names(data)=gsub("[/.]"," ",names(data))
+suppressMessages(require(stringi))
+data$brand=stri_trans_totitle(data$brand)
+rownames(data)=data$brand
+names(data)=stri_trans_totitle(names(data))
+```
+```{r}
+#Running the Algorithm
+pcs=prcomp(data[,-1]) #Ratings are all in the same scale so they should NOT be scaled
+pc1=pcs$rotation[,1]
+pc2=pcs$rotation[,2]
+par(mar=c(rep(0,4)),oma=c(rep(0,4)))
+suppressMessages(require(ggbiplot))
+ggbiplot(pcs,labels=paste0("\nO\n",data$Brand),labels.size=5,varname.size=4)+theme_light(base_size=16)+xlim(-2.4,1.4)+ylim(-1.35,2.15)+theme(panel.grid.minor=element_blank(),panel.grid.major=element_blank(),axis.ticks = element_blank(),axis.text.y = element_blank(),axis.text.x = element_blank())+labs(title="Biplot of Principal Components")
+```
+
+
+##Interpretation
+
+###How to interpret it
+This is an approximate 2D fit of the data. In this case, it retains 91% + 5.7%= 96.7% of the variation in perception of brands, so it's totally valid to draw conclusions from it. Each attribute is represented in a certain 2D direction by an arrow that extends indefinitely but is shortened for visual aid. The further a point (in this case, brands) is located towards the direction where an arrow points, the more it its perceived to have this attribute, and the further it points to the opposite direction, the less it is perceived to have it. If we were to draw a line perpendicular to any of these arrows, all of the points falling in this line would have the same perception level for this attribute (and these lines could be drawn at any part of the arrow). Also, the closer the angle between two arrows, the more correlated these characteristics are perceived to be.
+
+###Conclusions:
+As would be expected, Alienware and Apple laptops were far more positively perceived than all the other laptop brands, but also as more expensive. Particularly, Alienware laptops were perceived to be more durable and reliable than Apple's, whereas Apple's were perceived to be better looking but significantly more expensive. Samsung was perceived to be slightly more expensive than Sony. Asus and HP were perceived as the worse but also the cheapest. After Apple and Alienware, Lenovo was perceived as overall the most durable, reliable and with good support, yet also one of the cheapests; and Samsung the most user-friendly, high-quality, good looking and expensive. It can also be seen that the attributes tend to cluster towards 3 directions: one of them contains durable-reliable-offeringGoodSupport, other HighQuality-UserFriendly-Innovative, and the last one Expensive-GoodLooking; although these 3 directions are also highly correlated.
+
+##Why this visualization
+
+There are different techniques for creating perceptual maps, for example, multidimensional scaling, semantic scales, correspondence analysis, etc. But, in my opinion, this is the most helpful visualization when using survey data, as it tells you the attributes explicitly (compared to multidimensional scaling), provides a comprehensible graph (compared to semantic scales), can be used to get insights for both the differences among brands and the differences among attributes, and wouldn't distort the analysis for having to mix heterogeneous groups (compared to joint space maps, as will be explained at the end of this document). However, this is a very general visualization and in some cases other techniques should be preferred: for example, a joint space map MIGHT be preferable to this when evaluating a brand repositioning.
+
+##Limitations
+
+The data was collected from a survey among a general population, and these data are aggregated before producing the plot. As different people have different perceptions of the same brands, it would be preferable to conduct the survey only among the people of interest (e.g. only among people who earn a certain amount of money, or only among the target market for a certain product), and in some cases it might be preferable by aggregating the ratings not by taking the average (arithmetic mean), but by other measure such as the median or trimmed mean.
+
+
+##Other Visualizations
+
+Depending on the kind of data that is available (in this case the survey was conducted with the explicit purpose of generating this map), this visualization might not be possible to conduct and other techniques should be used.
+
+###No obvious attributes
+
+In the previous example, the survey included a list of attributes to rate, but there are occasions when it's not possible to come up with a representative list of attributes, or the relevant attributes to qualify brands/products/entities are not well understood or too difficult to express in words. For example, we can also compare countries rather than brands, but it's difficult to come up with a list of the dimensions that differentiate countries. In this case, another technique could be employed in which the survey asks not about attributes, but about how different are two countries from each other and then a multidimensional scaling is performed to see them in 2D. The data for this example was taken from [here](http://statweb.stanford.edu/~tibs/ElemStatLearn/data.html) (the survey was conducted among students of political science):
+
+```{r,cache=TRUE}
+#Loading the data
+dist.m=read.table("http://statweb.stanford.edu/~tibs/ElemStatLearn/datasets/countries.data")
+cts=read.table("http://statweb.stanford.edu/~tibs/ElemStatLearn/datasets/countries.info.txt",skip=4)
+cts=stri_split_regex(as.matrix(cts),pattern=",",simplify=TRUE)
+cts=t(cts)
+names(dist.m)=cts
+rownames(dist.m)=cts
+
+#Running the algorithm
+cord=cmdscale(dist.m,eig=TRUE, k=2)
+x=cord$points[,1]
+y=cord$points[,2]
+plot(x,y,xlab="First MDS Coordinate",ylab="Second MDS Coordinate",ylim=c(-2.3,3),pch=19,col='red',main="Multidimensional Scaling of Countries")
+text(x,y-.2,labels=cts,font=2)
+grid()
+```
+
+Normally, this would be continued by assigning labels to the axes, but in this case, it's very hard to see what do they determine and this is one good reason to avoid these kinds of perceptual maps when possible: the interpretation of the axes is subjective and may be wrong or misleading - for example, we could say here that the Y axis is measuring poverty while the X axis measures political freedom, but his would be a subjective interpretation. Also, the position of the points in the map can vary a lot depending on the parameters and the scaling that is used to produce the plot.
+
+####Limitations
+
+As was already mentioned, the axes that are being measured are subjective. In this case, we could say that the Y axis is measuring poverty and the X axis is measuring political freedom, but that's a totally subjective interpretaion.
+
+###Data about customer segments
+
+In some cases, when different customer segments are identified among respondants (this could be achieved for example by sending email surveys to customers known to belong to a certain segment or by suppling an additional survey with personal or demographic information to each respondant, but it would certainly diminish the completion rate and would take a lot more time), it's possible to create a map of both attributes and preferences, which is similar to the first map illustrated here, but also includes the attribute preferences of different segments or of individual respondants. For this purpose, the survey needs to be extend to have a question of how much do respondents prefer each brand, and would need a larger sample size to capture different segments.
+
+This example was created with [this](https://docs.google.com/spreadsheets/d/1WkiT7ZHntSwB9SAisWVulIZlBTPmNJg7Jf5-sSSZo9c/edit?pli=1#gid=0) dataset about student's preferences for university courses. In this case, there is no data saying to which segment does each student belong, so I first performed clustering (segmentation) to obtained segments and then perform the analysis:
+
+```{r,cache=TRUE}
+#Loading the data
+
+#In this case, data is already summarized and in the right format
+courses=read.csv("courses.csv")
+
+#This information makes it different from the first example
+prefs=read.csv("preferences.csv")
+
+#Clustering Students with Spectral Clustering
+
+#Determining the number of clusters
+suppressWarnings(suppressPackageStartupMessages(library(kknn)))
+ss=data.frame(2:10,rep(NA,9))
+set.seed(100)
+for (i in 2:10){
+  best=Inf
+  for (j in 1:50) {
+    temp=specClust(prefs,i)
+    temp=temp$betweenss/temp$totss
+    if (temp<best) {ss[i,2]=temp}
+  }
+}
+plot(ss,ylab="",main="Intra/Inter Cluster Variability Ratio",xlab="Number of clusters",type='b',col='red',xlim=c(2,10))
+```
+
+From this graph, 4 or 5 clusters seems to be the optimal number, so I'll continue the analysis with 5.
+
+```{r,cache=TRUE}
+#Assigning memberships
+set.seed(100)
+cl=specClust(prefs,5)
+prefs$cl=cl$cluster
+prefs=prefs %>% group_by(cl) %>% summarise_each(rep("mean",5))
+names(data)=gsub("_mean","",names(data))
+
+#Producing the plot
+#Original function was taken from here:
+#http://marketing-yogi.blogspot.ru/2012/12/session-4-rcode-perceptual-maps.html
+#(I made some modifications to it)
+JSM <- function(inp1, prefs){
+
+ # inp1 = perception matrix with row and column headers
+ # brands in rows and attributes in columns
+ # prefs = preferences matrix
+
+ par(pty="s") # set square plotting region
+
+ fit = prcomp(inp1, scale.=TRUE) # extract prin compts
+ 
+  #Adding variance explained:
+ v=cumsum(fit$sdev^2 / sum(fit$sdev^2))
+ p1=paste0("PC1 (",round(v[1]*100,1),"% of variance explained)")
+ p2=paste0("PC2 (",round((v[2]-v[1])*100,1),"% of variance explained)")
+
+ plot(fit$rotation[,1:2], # use only top 2 prinComps
+ type ="n",xlim=c(-1,2), ylim=c(-.6,1.3), # plot parms
+ main ="Joint Attribute-Preference Space Map",xlab=p1,ylab=p2) # plot title
+
+ abline(h=0); abline(v=0) # build horiz & vert axes
+
+ attribnames = colnames(inp1)
+ brdnames = rownames(inp1)
+
+ # <-- insert attrib vectors as arrows--
+ for (i1 in 1:nrow(fit$rotation)){
+ arrows(0,0, x1=fit$rotation[i1,1]*fit$sdev[1], y1=fit$rotation[i1,2]*fit$sdev[2], col="blue", lwd=1.5,angle=20);
+ text(x=fit$rotation[i1,1]*fit$sdev[1],y=fit$rotation[i1,2]*fit$sdev[2], labels=attribnames[i1],col="blue", cex=.9)}
+
+ # <--- make co-ords within (-1,1) frame #
+
+ fit1=fit
+ fit1$x[,1]=fit$x[,1]/apply(abs(fit$x),2,sum)[1]
+ fit1$x[,2]=fit$x[,2]/apply(abs(fit$x),2,sum)[2]
+ points(x=fit1$x[,1], y=fit1$x[,2], pch=19, col="red")
+ text(x=fit1$x[,1], y=fit1$x[,2], labels=brdnames,col="black", cex=1.1)
+
+ # --- add preferences to map ---#
+ k1 = 2; #scale-down factor
+ pref=data.matrix(prefs)# make data compatible
+ pref1 = pref %*% fit1$x[,1:2]
+ for (i1 in 1:nrow(pref1)){segments(0,0, x1=pref1[i1,1]/k1,y1=pref1[i1,2]/k1, col="maroon2", lwd=1.25)}
+ # voila, we're done! #
+ 
+
+ }
+prefs$cl=NULL
+row.names(courses)=courses$Course
+courses$Course=NULL
+names(courses)=gsub("[/.]"," ",names(courses))
+JSM(courses,prefs)
+```
+
+For this plot, the interpretation is the same as with the first example, but now there are these pink lines that indicate the course preferences of the previously determined clusters or segments of students. We can see from this plot that, for example, the courses MGTO and INVA seem to be the furthest apart, given that they represent, respectively, PracticalRelevance-ConceptualAndTheoreticalValue and InterestSustained-DifficultyLevel. Interestingly, the courses SAIT and GSB seem to appeal the most to a certain segment, MGTO to another different segment, and INVA is the exact opposite of a certain other segment. We can also see that, in particular, the two segmenst pointing towards the upper-right corner are not being well served by any of these courses.
+
+####Limitations
+
+In this case, the segments were obtained by performing clustering on the students based on their preferences, but this might not be a good idea given that we don't know what characterizes each segment outside of their preferences for courses. We would rather want to have segments obtained from other criteria, such as "people who live in New York and earn over $200,000" or "Retired People" or "Students of Liberal Arts Programs", as then we would know where to focus and which segments can be more important or even profitable. Also, since in this case the survey is neccessarily conducted among different segments, the plot might not be very reliable if these segments differ significantly in how they perceive the attributes of each course/brand/entity, given that the data needs to be summarized across all segments.
+
+Also, in this particular case, we can see that these first two principal components only explain 76% of the variance, so this 2D plot is not as reliable as the one for laptops at the beginning.
