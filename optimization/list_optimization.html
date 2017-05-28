@@ -11857,33 +11857,33 @@ div#notebook {
   <tbody>
     <tr>
       <th>0</th>
-      <td>2</td>
-      <td>3</td>
+      <td>1</td>
+      <td>0</td>
       <td>1</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>2</td>
       <td>0</td>
-      <td>5</td>
+      <td>0</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0</td>
+      <td>2</td>
       <td>0</td>
       <td>5</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>2</td>
-      <td>5</td>
       <td>1</td>
+      <td>0</td>
+      <td>3</td>
     </tr>
     <tr>
       <th>4</th>
+      <td>2</td>
       <td>0</td>
       <td>5</td>
-      <td>3</td>
     </tr>
   </tbody>
 </table>
@@ -12578,27 +12578,27 @@ Output the ordering with the highest score seen
     <tr>
       <th>Metropolis-Hastings Swapping</th>
       <td>748</td>
-      <td>6.943077</td>
+      <td>6.684514</td>
     </tr>
     <tr>
       <th>Min-Conflict</th>
       <td>734</td>
-      <td>1.437503</td>
+      <td>1.712063</td>
     </tr>
     <tr>
       <th>Random Swaps</th>
       <td>728</td>
-      <td>20.484828</td>
+      <td>20.074880</td>
     </tr>
     <tr>
       <th>Kwik-Sort (10,000 trials)</th>
       <td>722</td>
-      <td>7.154575</td>
+      <td>7.091801</td>
     </tr>
     <tr>
       <th>Greedy Ranking</th>
       <td>650</td>
-      <td>0.006001</td>
+      <td>0.015600</td>
     </tr>
   </tbody>
 </table>
@@ -12740,35 +12740,35 @@ Output the ordering with the highest score seen
     <tr>
       <th>Metropolis-Hastings Swapping</th>
       <td>748</td>
-      <td>6.943077</td>
+      <td>6.684514</td>
       <td>86.67%</td>
       <td>62.38%</td>
     </tr>
     <tr>
       <th>Min-Conflict</th>
       <td>734</td>
-      <td>1.437503</td>
+      <td>1.712063</td>
       <td>86.67%</td>
       <td>66.71%</td>
     </tr>
     <tr>
       <th>Random Swaps</th>
       <td>728</td>
-      <td>20.484828</td>
+      <td>20.074880</td>
       <td>81.84%</td>
       <td>54.92%</td>
     </tr>
     <tr>
       <th>Kwik-Sort (10,000 trials)</th>
       <td>722</td>
-      <td>7.154575</td>
+      <td>7.091801</td>
       <td>86.90%</td>
       <td>68.55%</td>
     </tr>
     <tr>
       <th>Greedy Ranking</th>
       <td>650</td>
-      <td>0.006001</td>
+      <td>0.015600</td>
       <td>79.31%</td>
       <td>52.37%</td>
     </tr>
@@ -12798,6 +12798,214 @@ Output the ordering with the highest score seen
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>Taking a look at which elements do each put at the top and at the bottom – the numbers in each column reflect the item IDs and are ordered according to their rank under each ordering:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Simulation&#39;s order&quot;</span><span class="p">:</span><span class="n">best_theoretical_order</span><span class="p">,</span><span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">mh_rank</span><span class="p">,</span> <span class="s1">&#39;Min-Conflict&#39;</span><span class="p">:</span><span class="n">mc_rank</span><span class="p">,</span>
+              <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="n">rs_rank</span><span class="p">,</span><span class="s1">&#39;Kwik-Sort (10,000 trials)&#39;</span><span class="p">:</span><span class="n">ks_rank</span><span class="p">,</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="n">greedy_rank</span><span class="p">})</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Greedy Ranking</th>
+      <th>Kwik-Sort (10,000 trials)</th>
+      <th>Metropolis-Hastings Swapping</th>
+      <th>Min-Conflict</th>
+      <th>Random Swaps</th>
+      <th>Simulation's order</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>12</td>
+      <td>16</td>
+      <td>25</td>
+      <td>16</td>
+      <td>16</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>10</td>
+      <td>25</td>
+      <td>13</td>
+      <td>18</td>
+      <td>15</td>
+      <td>18</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>16</td>
+      <td>18</td>
+      <td>16</td>
+      <td>12</td>
+      <td>25</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>25</td>
+      <td>12</td>
+      <td>18</td>
+      <td>19</td>
+      <td>18</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>18</td>
+      <td>10</td>
+      <td>12</td>
+      <td>10</td>
+      <td>12</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>24</td>
+      <td>13</td>
+      <td>10</td>
+      <td>13</td>
+      <td>19</td>
+      <td>14</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Simulation&#39;s order&quot;</span><span class="p">:</span><span class="n">best_theoretical_order</span><span class="p">,</span><span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">mh_rank</span><span class="p">,</span> <span class="s1">&#39;Min-Conflict&#39;</span><span class="p">:</span><span class="n">mc_rank</span><span class="p">,</span>
+              <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="n">rs_rank</span><span class="p">,</span><span class="s1">&#39;Kwik-Sort (10,000 trials)&#39;</span><span class="p">:</span><span class="n">ks_rank</span><span class="p">,</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="n">greedy_rank</span><span class="p">})</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Greedy Ranking</th>
+      <th>Kwik-Sort (10,000 trials)</th>
+      <th>Metropolis-Hastings Swapping</th>
+      <th>Min-Conflict</th>
+      <th>Random Swaps</th>
+      <th>Simulation's order</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>24</th>
+      <td>23</td>
+      <td>11</td>
+      <td>29</td>
+      <td>22</td>
+      <td>22</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>28</td>
+      <td>7</td>
+      <td>22</td>
+      <td>27</td>
+      <td>23</td>
+      <td>27</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>8</td>
+      <td>29</td>
+      <td>23</td>
+      <td>8</td>
+      <td>20</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>19</td>
+      <td>23</td>
+      <td>28</td>
+      <td>23</td>
+      <td>28</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>3</td>
+      <td>28</td>
+      <td>8</td>
+      <td>28</td>
+      <td>8</td>
+      <td>28</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>0</td>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <p><a id="p5"></a></p>
 <h2 id="5.-Ranking-a-larger-list">5. Ranking a larger list<a class="anchor-link" href="#5.-Ranking-a-larger-list">&#182;</a></h2><p>The previous list only had 30 elements, and while this makes it infeasible to order by brute-force search, the problem is still smallish. Not all algorithms scale well with a bigger sample size.</p>
 <p>Now doing the same but with a bigger simulation:</p>
@@ -12813,7 +13021,7 @@ Output the ordering with the highest score seen
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">nitems</span><span class="o">=</span><span class="mi">250</span>
@@ -12870,7 +13078,7 @@ Number of pairs in the list: 31125
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Generating a random ordering</span>
@@ -12939,7 +13147,7 @@ Number of pairs in the list: 31125
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[12]:</div>
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
@@ -12957,28 +13165,28 @@ Number of pairs in the list: 31125
     <tr>
       <th>Metropolis-Hastings Swapping</th>
       <td>9102</td>
-      <td>95.059425</td>
+      <td>91.039742</td>
       <td>89.52%</td>
       <td>65.42%</td>
     </tr>
     <tr>
       <th>Random Swaps</th>
       <td>9006</td>
-      <td>140.999825</td>
+      <td>129.497184</td>
       <td>88.46%</td>
       <td>62.47%</td>
     </tr>
     <tr>
       <th>Greedy Ranking</th>
       <td>7292</td>
-      <td>3.191034</td>
+      <td>2.880108</td>
       <td>77.77%</td>
       <td>45.54%</td>
     </tr>
     <tr>
       <th>Kwik-Sort (1,000 trials)</th>
       <td>6120</td>
-      <td>30.216938</td>
+      <td>26.603056</td>
       <td>70.54%</td>
       <td>28.62%</td>
     </tr>
@@ -13003,6 +13211,344 @@ Number of pairs in the list: 31125
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Again taking a look at which elements do each put at the top and at the bottom – the numbers in each column reflect the item IDs and are ordered according to their rank under each ordering:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Simulation&#39;s order&quot;</span><span class="p">:</span><span class="n">best_theoretical_order</span><span class="p">,</span><span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">mh_rank</span><span class="p">,</span>
+              <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="n">rs_rank</span><span class="p">,</span><span class="s1">&#39;Kwik-Sort (10,000 trials)&#39;</span><span class="p">:</span><span class="n">ks_rank</span><span class="p">,</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="n">greedy_rank</span><span class="p">})</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Greedy Ranking</th>
+      <th>Kwik-Sort (10,000 trials)</th>
+      <th>Metropolis-Hastings Swapping</th>
+      <th>Random Swaps</th>
+      <th>Simulation's order</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>8</td>
+      <td>193</td>
+      <td>105</td>
+      <td>222</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>7</td>
+      <td>177</td>
+      <td>198</td>
+      <td>124</td>
+      <td>232</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>203</td>
+      <td>1</td>
+      <td>207</td>
+      <td>77</td>
+      <td>152</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>127</td>
+      <td>198</td>
+      <td>124</td>
+      <td>161</td>
+      <td>77</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>232</td>
+      <td>232</td>
+      <td>226</td>
+      <td>226</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>39</td>
+      <td>71</td>
+      <td>16</td>
+      <td>16</td>
+      <td>36</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>92</td>
+      <td>168</td>
+      <td>107</td>
+      <td>236</td>
+      <td>86</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>226</td>
+      <td>52</td>
+      <td>77</td>
+      <td>207</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>231</td>
+      <td>55</td>
+      <td>1</td>
+      <td>233</td>
+      <td>39</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>242</td>
+      <td>124</td>
+      <td>233</td>
+      <td>227</td>
+      <td>233</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>154</td>
+      <td>145</td>
+      <td>39</td>
+      <td>107</td>
+      <td>222</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>165</td>
+      <td>41</td>
+      <td>232</td>
+      <td>79</td>
+      <td>203</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>34</td>
+      <td>79</td>
+      <td>50</td>
+      <td>97</td>
+      <td>207</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>161</td>
+      <td>80</td>
+      <td>8</td>
+      <td>170</td>
+      <td>167</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>107</td>
+      <td>0</td>
+      <td>31</td>
+      <td>60</td>
+      <td>236</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Simulation&#39;s order&quot;</span><span class="p">:</span><span class="n">best_theoretical_order</span><span class="p">,</span><span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">mh_rank</span><span class="p">,</span>
+              <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="n">rs_rank</span><span class="p">,</span><span class="s1">&#39;Kwik-Sort (10,000 trials)&#39;</span><span class="p">:</span><span class="n">ks_rank</span><span class="p">,</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="n">greedy_rank</span><span class="p">})</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Greedy Ranking</th>
+      <th>Kwik-Sort (10,000 trials)</th>
+      <th>Metropolis-Hastings Swapping</th>
+      <th>Random Swaps</th>
+      <th>Simulation's order</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>235</th>
+      <td>32</td>
+      <td>121</td>
+      <td>239</td>
+      <td>125</td>
+      <td>64</td>
+    </tr>
+    <tr>
+      <th>236</th>
+      <td>78</td>
+      <td>239</td>
+      <td>213</td>
+      <td>239</td>
+      <td>32</td>
+    </tr>
+    <tr>
+      <th>237</th>
+      <td>51</td>
+      <td>84</td>
+      <td>35</td>
+      <td>35</td>
+      <td>125</td>
+    </tr>
+    <tr>
+      <th>238</th>
+      <td>220</td>
+      <td>175</td>
+      <td>159</td>
+      <td>157</td>
+      <td>178</td>
+    </tr>
+    <tr>
+      <th>239</th>
+      <td>97</td>
+      <td>125</td>
+      <td>64</td>
+      <td>184</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>240</th>
+      <td>2</td>
+      <td>139</td>
+      <td>118</td>
+      <td>118</td>
+      <td>157</td>
+    </tr>
+    <tr>
+      <th>241</th>
+      <td>248</td>
+      <td>85</td>
+      <td>157</td>
+      <td>159</td>
+      <td>159</td>
+    </tr>
+    <tr>
+      <th>242</th>
+      <td>15</td>
+      <td>137</td>
+      <td>184</td>
+      <td>178</td>
+      <td>199</td>
+    </tr>
+    <tr>
+      <th>243</th>
+      <td>206</td>
+      <td>230</td>
+      <td>178</td>
+      <td>69</td>
+      <td>230</td>
+    </tr>
+    <tr>
+      <th>244</th>
+      <td>80</td>
+      <td>185</td>
+      <td>32</td>
+      <td>32</td>
+      <td>118</td>
+    </tr>
+    <tr>
+      <th>245</th>
+      <td>52</td>
+      <td>181</td>
+      <td>15</td>
+      <td>51</td>
+      <td>229</td>
+    </tr>
+    <tr>
+      <th>246</th>
+      <td>213</td>
+      <td>210</td>
+      <td>173</td>
+      <td>64</td>
+      <td>213</td>
+    </tr>
+    <tr>
+      <th>247</th>
+      <td>209</td>
+      <td>178</td>
+      <td>69</td>
+      <td>213</td>
+      <td>51</td>
+    </tr>
+    <tr>
+      <th>248</th>
+      <td>79</td>
+      <td>95</td>
+      <td>51</td>
+      <td>140</td>
+      <td>69</td>
+    </tr>
+    <tr>
+      <th>249</th>
+      <td>140</td>
+      <td>209</td>
+      <td>209</td>
+      <td>209</td>
+      <td>209</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
     </div>
   </div>
