@@ -11776,7 +11776,7 @@ $$ \min_w  \sum_{u \in users} \bigg( \frac{1}{\left\vert\ M_u \right\vert} \sum_
 <p>Recommendations are then produced for each user by calculating, for each movie, $w^\mathsf{T}(z_j \otimes x_u)$ and taking the movies with highest such score for that user.</p>
 <p>Intuitively, the parameters that minimize such a loss function would be exactly the same that minimize a regression of the centered ratings for each user, that is:</p>
 $$ \min_w \sum_{u \in users} \frac{1}{\left\vert\ M_u \right\vert} \sum_{i \in M_u} \bigg( (R_{ui} - \overline{R_u}) - w^\mathsf{T}(z_i \otimes x_u)  \bigg)^2 + \lambda \lVert w \rVert^2_2 $$<p>This is far easier and faster to work with, and can be easily computed with standard libraries. I found the formula without weights by movies rated per user to be slightly more accurate after optimizing the coefficients for half an hour.</p>
-<p>As well, if determining the model's coefficients with SGD, it works better when taking batches of ratings from the same users than random ratings from different users, and if doing the latter, it gets better when subtracting from a user-movie rating the average movie rating rather than the average rating than a user gives to movies. It also works well with ElasticNet penalizations, but this is slower.</p>
+<p>As well, if determining the model's coefficients with SGD, it works better when taking batches of ratings from the same users than random ratings from different users, and if doing the latter, it gets better when subtracting from a user-movie rating the average movie rating rather than the average rating that each user gives to movies. It also works well with ElasticNet penalizations, but this is slower.</p>
 
 </div>
 </div>
@@ -13321,8 +13321,8 @@ Name: Region, dtype: int64</pre>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a id="p4"></a></p>
-<h2 id="4.-Fitting-the-model">4. Fitting the model<a class="anchor-link" href="#4.-Fitting-the-model">&#182;</a></h2><p>As the data is very high-dimensional (3071 features) and contains many rows, it doesn't fit in a desktop computer's RAM memory, thus I'll fit the model with batches of data that I'll generate dynamically, with growing batch sizes.</p>
-<p>As explained at the beginning, this tended to work better when using batches of all the ratings from a given set of users vs. taking batches of random ratings, and in this latter case, it worked better if subtracting a movie's average ratng by all users rather than the user's average rating he gives to movies. It also works better with ElasticNet penalization, but his makes it slower.</p>
+<h2 id="4.-Fitting-the-model">4. Fitting the model<a class="anchor-link" href="#4.-Fitting-the-model">&#182;</a></h2><p>As the data is very high-dimensional (3071 features) and contains many rows, it doesn't fit in a desktop computer's RAM memory, thus I'll fit the model with batches of data that I'll generate dynamically.</p>
+<p>As explained at the beginning, this tended to work better when using batches of all the ratings from a given set of users vs. taking batches of random ratings, and in this latter case, it worked better if subtracting a movie's average rating by all users rather than the user's average rating he gives to movies. It also works better with ElasticNet penalization, but this makes it slower.</p>
 <p>Due to the time it takes to compute all these parameters, I won’t do any learning rate or hyperparameter tuning here, and I'll just stop the computations after running for half an hour. In the end, this will end up using only a fraction of the training data for parameter estimation, but the recommendations still seem good.</p>
 
 </div>

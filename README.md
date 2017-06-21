@@ -1,8 +1,8 @@
 # Data Science examples
 
-This is a collection of interesting examples and projects in machine learning, business intelligence and optimization that I’ve done as part of coursework, homeworks, books, online courses, personal projects and others. Most of them use public or simulated data.
+This is a collection of interesting examples and projects in machine learning, optimization and business intelligence that I’ve done as part of coursework, books, online courses, personal projects and others. Most of them use public or simulated data.
 
-They are all built in either R (presented as an R Markdown document or Shiny application, along with the script that builds it) or Python, some of them with Spark (presented as an IPython notebook), including the code that does the analysis, results, explanations and technical comments. Please note that they are not updated and some of the software packages have incorporated new functionality and different commands since the time some of these were produced. Most of the links below point towards links generated from nbviewer and htmlpreview – opening the files within GitHub itself might cause some bad behavior (e.g. mathematical symbols not appearing, TOC not clickable).
+_Note: most of the links below point towards links generated from nbviewer and htmlpreview – opening the files within GitHub itself might cause some bad behavior (e.g. mathematical symbols not appearing, TOC not clickable)._
 
 ## Machine Learning
 * **Clustering musical artists (Python + Spark) [(click here)](http://nbviewer.ipython.org/github/david-cortes/datascienceprojects/blob/master/machine_learning/clustering_fm_artists.ipynb):** clustering (finding similar groups of) musical artists using the data from Last.fm on top-played artists per user (large dataset) with graph-based methods, using Spark to parallelize the computations and speed-up the process.
