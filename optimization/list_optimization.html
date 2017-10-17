@@ -11845,6 +11845,19 @@ div#notebook {
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -11857,33 +11870,33 @@ div#notebook {
   <tbody>
     <tr>
       <th>0</th>
-      <td>1</td>
+      <td>2</td>
       <td>0</td>
-      <td>1</td>
+      <td>5</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0</td>
-      <td>0</td>
       <td>1</td>
+      <td>5</td>
+      <td>3</td>
     </tr>
     <tr>
       <th>2</th>
       <td>2</td>
       <td>0</td>
-      <td>5</td>
+      <td>2</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>1</td>
+      <td>2</td>
       <td>0</td>
       <td>3</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>2</td>
+      <td>3</td>
       <td>0</td>
-      <td>5</td>
+      <td>1</td>
     </tr>
   </tbody>
 </table>
@@ -12039,134 +12052,132 @@ Item goodness across all users in simulation: [(0, 2.1), (4, 1.51), (5, 1.05), (
 
 
 <div class="output_png output_subarea ">
-<img src="data:image/png;base64,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
-KemKHSLiXklXAfcCq4CTnexmZr1jRD39MSnYPf2W3MvqjTaounz39J0PzVR19Y6Zma2HHPpmZgVx
-6JuZFcShb2ZWEIe+mVlBHPpmZgVx6JuZFcShb2ZWEIe+mVlBHPpmZgVx6JuZFcShb2ZWEIe+mVlB
-HPpmZgVx6JuZFcShb2ZWEIe+mVlBHPpmZgVx6JuZFcShb2ZWEIe+mVlBHPpmZgVx6JuZFcShb2ZW
-EIe+mVlBHPpmZgVx6JuZFcShb2ZWEIe+mVlBOgp9SadJulvSYklXSJosaYqkBZKWSLpO0pbdqqyZ
-mXWm7dCX9Drg48CMiNgDmAQcB8wCFkbEdOAGYHY3KmpmZp3rdHhnQ2AzSZOA1wDLgSOBefn1ecBR
-HZZhZmZd0nboR8TjwOeBZaSwfyYiFgJ9ETGQ51kBTO1GRc3MrHOT2l1Q0h+TevXbA88A35V0PBAN
-szY+X2Pu3Llr/q7VatRqtXarY2Y2IfX399Pf39+19SmiZSYPvaD0PuCQiPhwfn4CsB/wTqAWEQOS
-pgE3RsTuTZaPdsue6CQxxGfleNSAqt+bXmiDqsuv8j3ohfaveh/sVZKICLW7fCdj+suA/SRtorSH
-HATcC1wNnJjnmQnM76AMMzProraHdyLiVkn/AiwCVuV/vwFsAVwl6SRgKXBMNypqZmada3t4p+OC
-PbzTUvVfrTcBVlZY/qCSh3d64T3w8E4v6nR4p+2evk1kK6n2gIcUuiWr+j0ovf0nLv8Mg5lZQRz6
-ZmYFceibmRXEoW9mVhCHvplZQRz6ZmYFceibmRXEoW9mVhCHvplZQRz6ZmYFceibmRXEoW9mVhCH
-vplZQRz6ZmYFceibmRXEoW9mVhCHvplZQRz6ZmYFceibmRXEoW9mVhCHvplZQRz6ZmYFceibmRXE
-oW9mVhCHvplZQRz6ZmYFceibmRWko9CXtKWk70q6T9I9kvaVNEXSAklLJF0nactuVdbMzDrTaU//
-y8API2J34C3A/cAsYGFETAduAGZ3WIaZmXWJIqK9BaU/AhZFxE4N0+8HDoyIAUnTgP6I2K3J8tFu
-2ROdJKDKtqm6/F6og8uvunznQ3OSiAi1u3wnPf03AE9JulzS7ZK+IWlToC8iBgAiYgUwtYMyzMys
-iyZ1uOwM4JSI+IWkL5KGdho/nlt+XM+dO3fN37VajVqt1kF1zMwmnv7+fvr7+7u2vk6Gd/qAmyNi
-x/z8AFLo7wTU6oZ3bsxj/o3Le3inBQ/v9EIdXH7V5TsfmqtseCcP4Twqadc86SDgHuBq4MQ8bSYw
-v90yzMysu9ru6QNIegtwCbAR8BDwQWBD4Crg9cBS4JiI+F2TZd3Tb8E9/V6og8uvunznQ3Od9vQ7
-Cv1OOPRbc+j3Qh1cftXlOx+aq/LqHTMzW8849M3MCuLQNzMriEPfzKwgDn0zs4I49M3MCuLQNzMr
-iEPfzKwgDn0zs4I49M3MCuLQNzMriEPfzKwgDn0zs4I49M3MCuLQNzMriEPfzKwgDn0zs4I49M3M
-CuLQNzMriEPfzKwgDn0zs4I49M3MCuLQNzMriEPfzKwgDn0zs4I49M3MCuLQNzMriEPfzKwgHYe+
-pA0k3S7p6vx8iqQFkpZIuk7Slp1X08zMuqEbPf1TgXvrns8CFkbEdOAGYHYXyjAzsy7oKPQlbQsc
-DlxSN/lIYF7+ex5wVCdlmJlZ93Ta0/8i8Ckg6qb1RcQAQESsAKZ2WIaZmXXJpHYXlHQEMBARd0iq
-DTFrtHph7ty5a/6u1WrUakOtxsysPP39/fT393dtfYpomclDLyhdAHwAeBl4DbAF8D3grUAtIgYk
-TQNujIjdmywf7ZY90UliiM/K8ahBxeX3Qh1cftXlOx+ak0REqN3l2x7eiYizImK7iNgROBa4ISJO
-AK4BTsyzzQTmt1uGmZl111hcp/9Z4N2SlgAH5edmZtYD2h7e6bjgHh7emTZtBwYGllZci5K/2vdC
-HVx+teVvAqysrPS+vu1ZseKRysofSqfDOw79JjymXnX5vVAHl196+b2cT5WM6ZuZ2frHoW9mVhCH
-vplZQRz6ZmYFceibmRXEoW9mVhCHvplZQRz6ZmYFceibmRXEoW9mVhCHvplZQRz6ZmYFceibmRXE
-oW9mVhCHvplZQRz6ZmYFceibmRXEoW9mVhCHvplZQRz6ZmYFceibmRXEoW9mVhCHvplZQSZVXYFG
-zz77LNdee23V1TAzm5B6LvQvuugi5s6dx+TJe1RS/qpVyyop18x6ycZIqqz0vr7tWbHikTFZd8+F
-/urVq/nDH45m5crzK6rBd4BjKyrbzHrDSiAqK31gYOw+cDymb2ZWkLZDX9K2km6QdI+kuyR9Ik+f
-ImmBpCWSrpO0Zfeqa2Zmneikp/8ycHpEvAl4O3CKpN2AWcDCiJgO3ADM7ryaZmbWDW2HfkSsiIg7
-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
+<img src="data:image/png;base64,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
 "
 >
 </div>
@@ -12267,7 +12278,7 @@ Number of pairs in the list: 435
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a id="p3"></a></p>
 <h2 id="3.-Algorithms">3. Algorithms<a class="anchor-link" href="#3.-Algorithms">&#182;</a></h2><p>The example above with only 6 items found the best ordering by evaluating all the possible permutations of those 6 items, but such a brute-force search of all the orderings becomes infeasible when there are more than a dozen items (there are items! (factorial) possible orderings, so for example for 50 items there are 50!=3x10^64 different orderings).</p>
-<p>As such, this larger 30-element list will be ranked with discrete optimization algorithms based on local search, by swapping two items at a time within a list, starting with a random order. In addition, I also implemented two algorithms from some papers: <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.296.8422&amp;rep=rep1&amp;type=pdf">KwikSort</a> and <a href="http://arxiv.org/pdf/1105.5464">Greedy-Order</a> – the second one being perhaps the most straightforward heuristic.</p>
+<p>As such, this larger 30-element list will be ranked with discrete optimization algorithms based on local search, by swapping two items at a time within a list, starting with a random order. In addition, I also implemented two algorithms from some papers: <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.296.8422&amp;rep=rep1&amp;type=pdf">KwikSort</a> and <a href="http://arxiv.org/pdf/1105.5464">Greedy-Order</a> – the second one being perhaps the most straightforward heuristic; and two other common techniques: PageRank (the original algorithm used by Google for helping to rank web pages) and a convex relaxation of the problem with l1 penalty using a black-box SDP solver, by taking the difference between scores between two items plus a margin.</p>
 <p>While evaluating the score of an ordering requires checking the table of aggregated preferences for every pair in the list (of which there are items x (items-1)/2), it’s also possible to look for only the net effect that one particular pair of items has when they occupy their current position in the list, which implies checking only the preferences that involve this pair of items when they are at their current positions (which only implies (items -1) + (items -2) relationships).</p>
 <hr>
 <h4 id="Min-conflict-(complexity-O(items^3)):">Min-conflict (complexity O(items^3)):<a class="anchor-link" href="#Min-conflict-(complexity-O(items^3)):">&#182;</a></h4>
@@ -12318,7 +12329,7 @@ Output the ordering with the highest score seen
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Helpful functions</span>
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">cvxpy</span> <span class="k">as</span> <span class="nn">cvx</span>
 
 <span class="c1">#Calculating score for a given order</span>
 <span class="k">def</span> <span class="nf">list_score</span><span class="p">(</span><span class="n">ordering</span><span class="p">,</span><span class="n">prefs</span><span class="p">):</span>
@@ -12427,7 +12438,50 @@ Output the ordering with the highest score seen
             <span class="n">best_score</span><span class="o">=</span><span class="n">score</span>
             <span class="n">best_order</span><span class="o">=</span><span class="n">ordering</span>
     <span class="k">return</span> <span class="n">best_order</span>
+
+<span class="k">def</span> <span class="nf">pagerank</span><span class="p">(</span><span class="n">list_els</span><span class="p">,</span><span class="n">dict_prefs</span><span class="p">,</span><span class="n">eps_search</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">prefs_mat</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nitems</span><span class="p">,</span><span class="n">nitems</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">aggregated_preferences</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">v</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">elif</span> <span class="n">v</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">prefs_mat</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">+=</span><span class="n">v</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prefs_mat</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">-=</span><span class="n">v</span>
+    <span class="n">prefs_mat_orig</span><span class="o">=</span><span class="n">prefs_mat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">eps_grid</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">eps_search</span><span class="p">))</span>
+    <span class="n">best</span><span class="o">=-</span><span class="mi">10</span><span class="o">^</span><span class="mi">5</span>
+    <span class="n">best_order</span><span class="o">=</span><span class="kc">None</span>
     
+    <span class="k">for</span> <span class="n">eps</span> <span class="ow">in</span> <span class="n">eps_grid</span><span class="p">:</span>
+        <span class="n">prefs_mat</span><span class="o">=</span><span class="n">prefs_mat_orig</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nitems</span><span class="p">):</span>
+            <span class="n">prefs_mat</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">+=</span><span class="n">eps</span>
+            <span class="n">tot</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">prefs_mat</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">prefs_mat</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">prefs_mat</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="n">tot</span>
+
+        
+        <span class="n">pr</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nitems</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="n">nitems</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+            <span class="n">pr</span><span class="o">=</span><span class="n">prefs_mat</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span>
+        <span class="n">lst_pagerank</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">pr</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)))</span>
+        <span class="n">score_this_order</span><span class="o">=</span><span class="n">list_score</span><span class="p">(</span><span class="n">lst_pagerank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">score_this_order</span><span class="o">&gt;</span><span class="n">best</span><span class="p">:</span>
+            <span class="n">best</span><span class="o">=</span><span class="n">score_this_order</span>
+            <span class="n">best_order</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">lst_pagerank</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">best_order</span>
+
+<span class="k">def</span> <span class="nf">cvx_relaxation</span><span class="p">(</span><span class="n">list_els</span><span class="p">,</span><span class="n">dict_prefs</span><span class="p">):</span>
+    <span class="n">r</span><span class="o">=</span><span class="n">cvx</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">nitems</span><span class="p">)</span>    
+    <span class="n">obj</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">aggregated_preferences</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">v</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">+=</span><span class="n">cvx</span><span class="o">.</span><span class="n">pos</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="n">r</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">-</span><span class="n">v</span><span class="o">*</span><span class="n">r</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">+=</span><span class="n">cvx</span><span class="o">.</span><span class="n">pos</span><span class="p">(</span><span class="o">-</span><span class="n">v</span><span class="o">*</span><span class="n">r</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">+</span><span class="n">v</span><span class="o">*</span><span class="n">r</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">prob</span><span class="o">=</span><span class="n">cvx</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">cvx</span><span class="o">.</span><span class="n">Minimize</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+    <span class="n">prob</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)))</span>
 
 <span class="k">def</span> <span class="nf">minconflict</span><span class="p">(</span><span class="n">initial_guess</span><span class="p">,</span><span class="n">dict_prefs</span><span class="p">):</span>
     <span class="n">ordering</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">initial_guess</span><span class="p">)</span>
@@ -12520,6 +12574,18 @@ Output the ordering with the highest score seen
 <span class="n">ks_rank</span><span class="o">=</span><span class="n">kwiksort_multiple_runs</span><span class="p">(</span><span class="n">random_ordering</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">,</span><span class="n">runs</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
 <span class="n">time_kwiksort</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
 
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">pr_rank</span><span class="o">=</span><span class="n">pagerank</span><span class="p">(</span><span class="n">random_ordering</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">)</span>
+<span class="n">time_pagerank</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">cvxrelax_rank</span><span class="o">=</span><span class="n">cvx_relaxation</span><span class="p">(</span><span class="n">random_ordering</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">)</span>
+<span class="n">time_cvxrelax</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
 <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <span class="n">mc_rank</span><span class="o">=</span><span class="n">minconflict</span><span class="p">(</span><span class="n">random_ordering</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">)</span>
 <span class="n">time_minconflict</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
@@ -12538,12 +12604,16 @@ Output the ordering with the highest score seen
 
 <span class="n">lst_scores</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">greedy_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">),</span>
             <span class="s1">&#39;Kwik-Sort (10,000 trials)&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">ks_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">),</span>
+            <span class="s1">&#39;PageRank (tuned epsilon)&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">pr_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">),</span>
+            <span class="s1">&#39;Convex relaxation&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">cvxrelax_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">),</span>
             <span class="s1">&#39;Min-Conflict&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">mc_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">),</span>
             <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">rs_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">),</span>
             <span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">mh_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">)</span>
            <span class="p">}</span>
 <span class="n">lst_times</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="n">time_greedy_rank</span><span class="p">,</span>
             <span class="s1">&#39;Kwik-Sort (10,000 trials)&#39;</span><span class="p">:</span><span class="n">time_kwiksort</span><span class="p">,</span>
+            <span class="s1">&#39;PageRank (tuned epsilon)&#39;</span><span class="p">:</span><span class="n">time_pagerank</span><span class="p">,</span>
+            <span class="s1">&#39;Convex relaxation&#39;</span><span class="p">:</span><span class="n">time_cvxrelax</span><span class="p">,</span>
             <span class="s1">&#39;Min-Conflict&#39;</span><span class="p">:</span><span class="n">time_minconflict</span><span class="p">,</span>
             <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="n">time_random_swaps</span><span class="p">,</span>
             <span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">time_metropolis</span>
@@ -12566,6 +12636,19 @@ Output the ordering with the highest score seen
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -12578,27 +12661,37 @@ Output the ordering with the highest score seen
     <tr>
       <th>Metropolis-Hastings Swapping</th>
       <td>748</td>
-      <td>6.684514</td>
+      <td>7.144304</td>
     </tr>
     <tr>
       <th>Min-Conflict</th>
       <td>734</td>
-      <td>1.712063</td>
+      <td>1.773097</td>
     </tr>
     <tr>
       <th>Random Swaps</th>
       <td>728</td>
-      <td>20.074880</td>
+      <td>20.773540</td>
     </tr>
     <tr>
       <th>Kwik-Sort (10,000 trials)</th>
       <td>722</td>
-      <td>7.091801</td>
+      <td>7.611491</td>
+    </tr>
+    <tr>
+      <th>Convex relaxation</th>
+      <td>714</td>
+      <td>1.228070</td>
+    </tr>
+    <tr>
+      <th>PageRank (tuned epsilon)</th>
+      <td>660</td>
+      <td>0.081005</td>
     </tr>
     <tr>
       <th>Greedy Ranking</th>
       <td>650</td>
-      <td>0.015600</td>
+      <td>0.006000</td>
     </tr>
   </tbody>
 </table>
@@ -12696,12 +12789,16 @@ Output the ordering with the highest score seen
 
 <span class="n">lst_conc_pairs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">greedy_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Kwik-Sort (10,000 trials)&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">ks_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
+            <span class="s1">&#39;PageRank (tuned epsilon)&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">pr_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
+            <span class="s1">&#39;Convex relaxation&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">cvxrelax_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Min-Conflict&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">mc_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">rs_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">mh_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">))</span>
            <span class="p">}</span>
 <span class="n">lst_sym_ap_cor</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">greedy_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Kwik-Sort (10,000 trials)&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">ks_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
+            <span class="s1">&#39;PageRank (tuned epsilon)&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">pr_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
+            <span class="s1">&#39;Convex relaxation&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">cvxrelax_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Min-Conflict&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">mc_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">rs_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">mh_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">))</span>
@@ -12726,6 +12823,19 @@ Output the ordering with the highest score seen
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -12740,35 +12850,49 @@ Output the ordering with the highest score seen
     <tr>
       <th>Metropolis-Hastings Swapping</th>
       <td>748</td>
-      <td>6.684514</td>
+      <td>7.144304</td>
       <td>86.67%</td>
       <td>62.38%</td>
     </tr>
     <tr>
       <th>Min-Conflict</th>
       <td>734</td>
-      <td>1.712063</td>
+      <td>1.773097</td>
       <td>86.67%</td>
       <td>66.71%</td>
     </tr>
     <tr>
       <th>Random Swaps</th>
       <td>728</td>
-      <td>20.074880</td>
+      <td>20.773540</td>
       <td>81.84%</td>
       <td>54.92%</td>
     </tr>
     <tr>
       <th>Kwik-Sort (10,000 trials)</th>
       <td>722</td>
-      <td>7.091801</td>
+      <td>7.611491</td>
       <td>86.90%</td>
       <td>68.55%</td>
     </tr>
     <tr>
+      <th>Convex relaxation</th>
+      <td>714</td>
+      <td>1.228070</td>
+      <td>86.44%</td>
+      <td>64.14%</td>
+    </tr>
+    <tr>
+      <th>PageRank (tuned epsilon)</th>
+      <td>660</td>
+      <td>0.081005</td>
+      <td>83.45%</td>
+      <td>49.50%</td>
+    </tr>
+    <tr>
       <th>Greedy Ranking</th>
       <td>650</td>
-      <td>0.015600</td>
+      <td>0.006000</td>
       <td>79.31%</td>
       <td>52.37%</td>
     </tr>
@@ -12808,7 +12932,8 @@ Output the ordering with the highest score seen
 <div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Simulation&#39;s order&quot;</span><span class="p">:</span><span class="n">best_theoretical_order</span><span class="p">,</span><span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">mh_rank</span><span class="p">,</span> <span class="s1">&#39;Min-Conflict&#39;</span><span class="p">:</span><span class="n">mc_rank</span><span class="p">,</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Simulation&#39;s order&quot;</span><span class="p">:</span><span class="n">best_theoretical_order</span><span class="p">,</span><span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">mh_rank</span><span class="p">,</span>
+              <span class="s1">&#39;PageRank&#39;</span><span class="p">:</span><span class="n">pr_rank</span><span class="p">,</span> <span class="s1">&#39;Convex relaxation&#39;</span><span class="p">:</span><span class="n">cvxrelax_rank</span><span class="p">,</span> <span class="s1">&#39;Min-Conflict&#39;</span><span class="p">:</span><span class="n">mc_rank</span><span class="p">,</span>
               <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="n">rs_rank</span><span class="p">,</span><span class="s1">&#39;Kwik-Sort (10,000 trials)&#39;</span><span class="p">:</span><span class="n">ks_rank</span><span class="p">,</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="n">greedy_rank</span><span class="p">})</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
 </pre></div>
 
@@ -12824,14 +12949,29 @@ Output the ordering with the highest score seen
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
+      <th>Convex relaxation</th>
       <th>Greedy Ranking</th>
       <th>Kwik-Sort (10,000 trials)</th>
       <th>Metropolis-Hastings Swapping</th>
       <th>Min-Conflict</th>
+      <th>PageRank</th>
       <th>Random Swaps</th>
       <th>Simulation's order</th>
     </tr>
@@ -12839,55 +12979,67 @@ Output the ordering with the highest score seen
   <tbody>
     <tr>
       <th>0</th>
+      <td>16</td>
       <td>12</td>
       <td>16</td>
       <td>25</td>
       <td>16</td>
+      <td>12</td>
       <td>16</td>
       <td>16</td>
     </tr>
     <tr>
       <th>1</th>
+      <td>13</td>
       <td>10</td>
       <td>25</td>
       <td>13</td>
+      <td>18</td>
       <td>18</td>
       <td>15</td>
       <td>18</td>
     </tr>
     <tr>
       <th>2</th>
+      <td>12</td>
       <td>16</td>
       <td>18</td>
       <td>16</td>
       <td>12</td>
+      <td>19</td>
       <td>25</td>
       <td>12</td>
     </tr>
     <tr>
       <th>3</th>
+      <td>18</td>
       <td>25</td>
       <td>12</td>
       <td>18</td>
       <td>19</td>
+      <td>10</td>
       <td>18</td>
       <td>4</td>
     </tr>
     <tr>
       <th>4</th>
+      <td>25</td>
       <td>18</td>
       <td>10</td>
       <td>12</td>
       <td>10</td>
+      <td>0</td>
       <td>12</td>
       <td>25</td>
     </tr>
     <tr>
       <th>5</th>
+      <td>0</td>
       <td>24</td>
       <td>13</td>
       <td>10</td>
       <td>13</td>
+      <td>25</td>
       <td>19</td>
       <td>14</td>
     </tr>
@@ -12907,7 +13059,8 @@ Output the ordering with the highest score seen
 <div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Simulation&#39;s order&quot;</span><span class="p">:</span><span class="n">best_theoretical_order</span><span class="p">,</span><span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">mh_rank</span><span class="p">,</span> <span class="s1">&#39;Min-Conflict&#39;</span><span class="p">:</span><span class="n">mc_rank</span><span class="p">,</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Simulation&#39;s order&quot;</span><span class="p">:</span><span class="n">best_theoretical_order</span><span class="p">,</span><span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">mh_rank</span><span class="p">,</span>
+              <span class="s1">&#39;PageRank&#39;</span><span class="p">:</span><span class="n">pr_rank</span><span class="p">,</span> <span class="s1">&#39;Convex relaxation&#39;</span><span class="p">:</span><span class="n">cvxrelax_rank</span><span class="p">,</span> <span class="s1">&#39;Min-Conflict&#39;</span><span class="p">:</span><span class="n">mc_rank</span><span class="p">,</span>
               <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="n">rs_rank</span><span class="p">,</span><span class="s1">&#39;Kwik-Sort (10,000 trials)&#39;</span><span class="p">:</span><span class="n">ks_rank</span><span class="p">,</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="n">greedy_rank</span><span class="p">})</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
 </pre></div>
 
@@ -12923,14 +13076,29 @@ Output the ordering with the highest score seen
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
+      <th>Convex relaxation</th>
       <th>Greedy Ranking</th>
       <th>Kwik-Sort (10,000 trials)</th>
       <th>Metropolis-Hastings Swapping</th>
       <th>Min-Conflict</th>
+      <th>PageRank</th>
       <th>Random Swaps</th>
       <th>Simulation's order</th>
     </tr>
@@ -12938,55 +13106,67 @@ Output the ordering with the highest score seen
   <tbody>
     <tr>
       <th>24</th>
+      <td>22</td>
       <td>23</td>
       <td>11</td>
       <td>29</td>
       <td>22</td>
+      <td>23</td>
       <td>22</td>
       <td>11</td>
     </tr>
     <tr>
       <th>25</th>
+      <td>29</td>
       <td>28</td>
       <td>7</td>
       <td>22</td>
       <td>27</td>
+      <td>8</td>
       <td>23</td>
       <td>27</td>
     </tr>
     <tr>
       <th>26</th>
+      <td>23</td>
       <td>8</td>
       <td>29</td>
       <td>23</td>
       <td>8</td>
+      <td>21</td>
       <td>20</td>
       <td>8</td>
     </tr>
     <tr>
       <th>27</th>
+      <td>28</td>
       <td>19</td>
       <td>23</td>
       <td>28</td>
       <td>23</td>
+      <td>20</td>
       <td>28</td>
       <td>23</td>
     </tr>
     <tr>
       <th>28</th>
+      <td>8</td>
       <td>3</td>
       <td>28</td>
       <td>8</td>
       <td>28</td>
+      <td>3</td>
       <td>8</td>
       <td>28</td>
     </tr>
     <tr>
       <th>29</th>
+      <td>3</td>
       <td>0</td>
       <td>3</td>
       <td>3</td>
       <td>3</td>
+      <td>28</td>
       <td>3</td>
       <td>3</td>
     </tr>
@@ -13099,6 +13279,18 @@ Number of pairs in the list: 31125
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">pr_rank</span><span class="o">=</span><span class="n">pagerank</span><span class="p">(</span><span class="n">random_ordering</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">)</span>
+<span class="n">time_pagerank</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">cvxrelax_rank</span><span class="o">=</span><span class="n">cvx_relaxation</span><span class="p">(</span><span class="n">random_ordering</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">)</span>
+<span class="n">time_cvxrelax</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <span class="n">rs_rank</span><span class="o">=</span><span class="n">random_swaps</span><span class="p">(</span><span class="n">random_ordering</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">,</span><span class="n">iterations</span><span class="o">=</span><span class="mi">50000</span><span class="p">)</span>
 <span class="n">time_random_swaps</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
 
@@ -13112,22 +13304,30 @@ Number of pairs in the list: 31125
 
 <span class="n">lst_scores</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">greedy_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">),</span>
             <span class="s1">&#39;Kwik-Sort (1,000 trials)&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">ks_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">),</span>
+            <span class="s1">&#39;PageRank (tuned epsilon)&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">pr_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">),</span>
+            <span class="s1">&#39;Convex relaxation&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">cvxrelax_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">),</span>
             <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">rs_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">),</span>
             <span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">list_score</span><span class="p">(</span><span class="n">mh_rank</span><span class="p">,</span><span class="n">aggregated_preferences</span><span class="p">)</span>
            <span class="p">}</span>
 <span class="n">lst_times</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="n">time_greedy_rank</span><span class="p">,</span>
             <span class="s1">&#39;Kwik-Sort (1,000 trials)&#39;</span><span class="p">:</span><span class="n">time_kwiksort</span><span class="p">,</span>
+            <span class="s1">&#39;PageRank (tuned epsilon)&#39;</span><span class="p">:</span><span class="n">time_pagerank</span><span class="p">,</span>
+            <span class="s1">&#39;Convex relaxation&#39;</span><span class="p">:</span><span class="n">time_cvxrelax</span><span class="p">,</span>
             <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="n">time_random_swaps</span><span class="p">,</span>
             <span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">time_metropolis</span>
            <span class="p">}</span>
 
 <span class="n">lst_conc_pairs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">greedy_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Kwik-Sort (1,000 trials)&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">ks_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
+            <span class="s1">&#39;PageRank (tuned epsilon)&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">pr_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
+            <span class="s1">&#39;Convex relaxation&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">cvxrelax_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">rs_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction_conc_pairs</span><span class="p">(</span><span class="n">mh_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">))</span>
            <span class="p">}</span>
 <span class="n">lst_sym_ap_cor</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">greedy_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Kwik-Sort (1,000 trials)&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">ks_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
+            <span class="s1">&#39;PageRank (tuned epsilon)&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">pr_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
+            <span class="s1">&#39;Convex relaxation&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">cvxrelax_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">rs_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">)),</span>
             <span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym_ap_cor</span><span class="p">(</span><span class="n">mh_rank</span><span class="p">,</span><span class="n">best_theoretical_order</span><span class="p">))</span>
            <span class="p">}</span>
@@ -13151,6 +13351,19 @@ Number of pairs in the list: 31125
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -13165,28 +13378,42 @@ Number of pairs in the list: 31125
     <tr>
       <th>Metropolis-Hastings Swapping</th>
       <td>9102</td>
-      <td>91.039742</td>
+      <td>97.669168</td>
       <td>89.52%</td>
       <td>65.42%</td>
     </tr>
     <tr>
       <th>Random Swaps</th>
       <td>9006</td>
-      <td>129.497184</td>
+      <td>146.839168</td>
       <td>88.46%</td>
       <td>62.47%</td>
     </tr>
     <tr>
+      <th>Convex relaxation</th>
+      <td>8396</td>
+      <td>159.802713</td>
+      <td>92.52%</td>
+      <td>73.78%</td>
+    </tr>
+    <tr>
+      <th>PageRank (tuned epsilon)</th>
+      <td>7568</td>
+      <td>2.920900</td>
+      <td>82.59%</td>
+      <td>49.81%</td>
+    </tr>
+    <tr>
       <th>Greedy Ranking</th>
       <td>7292</td>
-      <td>2.880108</td>
+      <td>2.895627</td>
       <td>77.77%</td>
       <td>45.54%</td>
     </tr>
     <tr>
       <th>Kwik-Sort (1,000 trials)</th>
       <td>6120</td>
-      <td>26.603056</td>
+      <td>28.923745</td>
       <td>70.54%</td>
       <td>28.62%</td>
     </tr>
@@ -13206,8 +13433,7 @@ Number of pairs in the list: 31125
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In words: Metropolis-Hastings swapping managed to reconstruct an overall order that is about 90% similar to the original one (in terms of fraction of concordant pairs), with a noisy and biased sample containing information for only one third of the relationships between items. Not bad!</p>
-<p>Kwik-Sort, however, didn't fare so well with this larger and more sparse input data.</p>
+<p>This time, Kwik-Sort didn't fare so well with this larger and more sparse input data, and the convex relaxation of the problem with l1 penalty seemed to reconstruct an order closest to the original. Metropolis-Hastings again did well both in terms of score and correlation with the real order behind the simulation.</p>
 
 </div>
 </div>
@@ -13228,6 +13454,7 @@ Number of pairs in the list: 31125
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Simulation&#39;s order&quot;</span><span class="p">:</span><span class="n">best_theoretical_order</span><span class="p">,</span><span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">mh_rank</span><span class="p">,</span>
+              <span class="s1">&#39;PageRank&#39;</span><span class="p">:</span><span class="n">pr_rank</span><span class="p">,</span> <span class="s1">&#39;Convex relaxation&#39;</span><span class="p">:</span><span class="n">cvxrelax_rank</span><span class="p">,</span>
               <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="n">rs_rank</span><span class="p">,</span><span class="s1">&#39;Kwik-Sort (10,000 trials)&#39;</span><span class="p">:</span><span class="n">ks_rank</span><span class="p">,</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="n">greedy_rank</span><span class="p">})</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
 </pre></div>
 
@@ -13243,13 +13470,28 @@ Number of pairs in the list: 31125
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
+      <th>Convex relaxation</th>
       <th>Greedy Ranking</th>
       <th>Kwik-Sort (10,000 trials)</th>
       <th>Metropolis-Hastings Swapping</th>
+      <th>PageRank</th>
       <th>Random Swaps</th>
       <th>Simulation's order</th>
     </tr>
@@ -13257,121 +13499,151 @@ Number of pairs in the list: 31125
   <tbody>
     <tr>
       <th>0</th>
+      <td>222</td>
       <td>8</td>
       <td>193</td>
       <td>105</td>
+      <td>52</td>
       <td>222</td>
       <td>50</td>
     </tr>
     <tr>
       <th>1</th>
+      <td>77</td>
       <td>7</td>
       <td>177</td>
       <td>198</td>
+      <td>152</td>
       <td>124</td>
       <td>232</td>
     </tr>
     <tr>
       <th>2</th>
+      <td>207</td>
       <td>203</td>
       <td>1</td>
       <td>207</td>
+      <td>206</td>
       <td>77</td>
       <td>152</td>
     </tr>
     <tr>
       <th>3</th>
+      <td>107</td>
       <td>127</td>
       <td>198</td>
       <td>124</td>
+      <td>233</td>
       <td>161</td>
       <td>77</td>
     </tr>
     <tr>
       <th>4</th>
+      <td>233</td>
       <td>232</td>
       <td>232</td>
       <td>226</td>
+      <td>97</td>
       <td>226</td>
       <td>8</td>
     </tr>
     <tr>
       <th>5</th>
+      <td>50</td>
       <td>39</td>
       <td>71</td>
       <td>16</td>
+      <td>50</td>
       <td>16</td>
       <td>36</td>
     </tr>
     <tr>
       <th>6</th>
+      <td>8</td>
       <td>92</td>
       <td>168</td>
       <td>107</td>
+      <td>77</td>
       <td>236</td>
       <td>86</td>
     </tr>
     <tr>
       <th>7</th>
+      <td>170</td>
       <td>226</td>
       <td>52</td>
       <td>77</td>
+      <td>186</td>
       <td>207</td>
       <td>16</td>
     </tr>
     <tr>
       <th>8</th>
+      <td>31</td>
       <td>231</td>
       <td>55</td>
       <td>1</td>
+      <td>222</td>
       <td>233</td>
       <td>39</td>
     </tr>
     <tr>
       <th>9</th>
+      <td>16</td>
       <td>242</td>
       <td>124</td>
       <td>233</td>
+      <td>6</td>
       <td>227</td>
       <td>233</td>
     </tr>
     <tr>
       <th>10</th>
+      <td>97</td>
       <td>154</td>
       <td>145</td>
       <td>39</td>
+      <td>212</td>
       <td>107</td>
       <td>222</td>
     </tr>
     <tr>
       <th>11</th>
+      <td>25</td>
       <td>165</td>
       <td>41</td>
       <td>232</td>
+      <td>0</td>
       <td>79</td>
       <td>203</td>
     </tr>
     <tr>
       <th>12</th>
+      <td>232</td>
       <td>34</td>
       <td>79</td>
       <td>50</td>
+      <td>170</td>
       <td>97</td>
       <td>207</td>
     </tr>
     <tr>
       <th>13</th>
+      <td>36</td>
       <td>161</td>
       <td>80</td>
       <td>8</td>
+      <td>1</td>
       <td>170</td>
       <td>167</td>
     </tr>
     <tr>
       <th>14</th>
+      <td>39</td>
       <td>107</td>
       <td>0</td>
       <td>31</td>
+      <td>16</td>
       <td>60</td>
       <td>236</td>
     </tr>
@@ -13392,6 +13664,7 @@ Number of pairs in the list: 31125
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Simulation&#39;s order&quot;</span><span class="p">:</span><span class="n">best_theoretical_order</span><span class="p">,</span><span class="s1">&#39;Metropolis-Hastings Swapping&#39;</span><span class="p">:</span><span class="n">mh_rank</span><span class="p">,</span>
+              <span class="s1">&#39;PageRank&#39;</span><span class="p">:</span><span class="n">pr_rank</span><span class="p">,</span> <span class="s1">&#39;Convex relaxation&#39;</span><span class="p">:</span><span class="n">cvxrelax_rank</span><span class="p">,</span>
               <span class="s1">&#39;Random Swaps&#39;</span><span class="p">:</span><span class="n">rs_rank</span><span class="p">,</span><span class="s1">&#39;Kwik-Sort (10,000 trials)&#39;</span><span class="p">:</span><span class="n">ks_rank</span><span class="p">,</span><span class="s1">&#39;Greedy Ranking&#39;</span><span class="p">:</span><span class="n">greedy_rank</span><span class="p">})</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
 </pre></div>
 
@@ -13407,13 +13680,28 @@ Number of pairs in the list: 31125
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
+      <th>Convex relaxation</th>
       <th>Greedy Ranking</th>
       <th>Kwik-Sort (10,000 trials)</th>
       <th>Metropolis-Hastings Swapping</th>
+      <th>PageRank</th>
       <th>Random Swaps</th>
       <th>Simulation's order</th>
     </tr>
@@ -13421,119 +13709,149 @@ Number of pairs in the list: 31125
   <tbody>
     <tr>
       <th>235</th>
+      <td>229</td>
       <td>32</td>
       <td>121</td>
+      <td>239</td>
       <td>239</td>
       <td>125</td>
       <td>64</td>
     </tr>
     <tr>
       <th>236</th>
+      <td>157</td>
       <td>78</td>
       <td>239</td>
       <td>213</td>
+      <td>12</td>
       <td>239</td>
       <td>32</td>
     </tr>
     <tr>
       <th>237</th>
+      <td>47</td>
       <td>51</td>
       <td>84</td>
       <td>35</td>
+      <td>197</td>
       <td>35</td>
       <td>125</td>
     </tr>
     <tr>
       <th>238</th>
+      <td>64</td>
       <td>220</td>
       <td>175</td>
       <td>159</td>
+      <td>173</td>
       <td>157</td>
       <td>178</td>
     </tr>
     <tr>
       <th>239</th>
+      <td>32</td>
       <td>97</td>
       <td>125</td>
       <td>64</td>
+      <td>171</td>
       <td>184</td>
       <td>15</td>
     </tr>
     <tr>
       <th>240</th>
+      <td>239</td>
       <td>2</td>
       <td>139</td>
       <td>118</td>
+      <td>184</td>
       <td>118</td>
       <td>157</td>
     </tr>
     <tr>
       <th>241</th>
+      <td>178</td>
       <td>248</td>
       <td>85</td>
       <td>157</td>
+      <td>229</td>
       <td>159</td>
       <td>159</td>
     </tr>
     <tr>
       <th>242</th>
+      <td>125</td>
       <td>15</td>
       <td>137</td>
       <td>184</td>
+      <td>157</td>
       <td>178</td>
       <td>199</td>
     </tr>
     <tr>
       <th>243</th>
+      <td>199</td>
       <td>206</td>
       <td>230</td>
       <td>178</td>
+      <td>104</td>
       <td>69</td>
       <td>230</td>
     </tr>
     <tr>
       <th>244</th>
+      <td>15</td>
       <td>80</td>
       <td>185</td>
       <td>32</td>
+      <td>47</td>
       <td>32</td>
       <td>118</td>
     </tr>
     <tr>
       <th>245</th>
+      <td>213</td>
       <td>52</td>
       <td>181</td>
       <td>15</td>
+      <td>118</td>
       <td>51</td>
       <td>229</td>
     </tr>
     <tr>
       <th>246</th>
+      <td>118</td>
       <td>213</td>
       <td>210</td>
       <td>173</td>
+      <td>51</td>
       <td>64</td>
       <td>213</td>
     </tr>
     <tr>
       <th>247</th>
+      <td>69</td>
       <td>209</td>
       <td>178</td>
       <td>69</td>
+      <td>178</td>
       <td>213</td>
       <td>51</td>
     </tr>
     <tr>
       <th>248</th>
+      <td>209</td>
       <td>79</td>
       <td>95</td>
       <td>51</td>
+      <td>69</td>
       <td>140</td>
       <td>69</td>
     </tr>
     <tr>
       <th>249</th>
+      <td>51</td>
       <td>140</td>
+      <td>209</td>
       <td>209</td>
       <td>209</td>
       <td>209</td>
