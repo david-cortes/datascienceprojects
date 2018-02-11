@@ -31,5 +31,3 @@ _Note: most of the links below point towards links generated from nbviewer and h
 * **Database Marketing (R) [(click here)](http://htmlpreview.github.io/?https://github.com/david-cortes/datascienceprojects/blob/master/business_intelligence/database_marketing.html):** using survival analysis (also called duration modeling) to model customer retention and attrition over time in a phone company, according to the channel through which they were acquired and the market to which they belong, then building a model for estimating expected customer revenue after 1 year and after 3 years according to how customers were obtained.
 * **Marketing Research (R) [(click here)](http://htmlpreview.github.io/?https://github.com/david-cortes/datascienceprojects/blob/master/business_intelligence/perceptual_map.html):** creating a perceptual map (also called “brand map”) of laptop brands from a small survey using principal components biplots and comparing it to other types of brand maps with data from surveys on university courses and perception of countries.
 
-
-#### Contact info: david.cortes.rivera@gmail.com
